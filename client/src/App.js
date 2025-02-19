@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 
 import LoginPage from './pages/login';
 import Tutor from './pages/tutor';
+import Dashboard from './pages/dashboard';
 
 function App() {
   const [message, setMessage] = useState('');
@@ -26,7 +27,10 @@ function App() {
 
     <Routes>
       <Route path="/" element={<LoginPage />} />
-      <Route path="/home" element={<Tutor />} />
+      <Route path="/home" element={<Dashboard />} />
+      <Route path="/pre-test" element={<h1>Pre-Test Page</h1>} />
+      <Route path="/post-test" element={<h1>Post-Test Page</h1>} />
+      <Route path="/tutor" element={<Tutor />} />
     </Routes>
   );
 }

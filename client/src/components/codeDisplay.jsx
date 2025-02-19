@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const CodeDisplay = ({ codeString, onCodeChange, correctAnswers }) => {
+const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange }) => {
     const [inputs, setInputs] = useState({}); // To track user input for blanks
     const [inputStyles, setInputStyles] = useState({}); // To track border styles for inputs
 
@@ -8,6 +8,10 @@ const CodeDisplay = ({ codeString, onCodeChange, correctAnswers }) => {
     const handleChange = (key, value) => {
         const updatedInputs = { ...inputs, [key]: value || "" }; // Ensure no undefined values
         setInputs(updatedInputs);
+
+        if (onInputsChange) {
+            onInputsChange(updatedInputs);
+        }
 
         // Notify parent component of the updated full code
         if (onCodeChange) {
@@ -26,7 +30,7 @@ const CodeDisplay = ({ codeString, onCodeChange, correctAnswers }) => {
             const correctAnswer = correctAnswers[index];
             if (correctAnswer !== undefined) {
                 updatedStyles[key] =
-                    userAnswer === correctAnswer ? "2px solid green" : "2px solid red";
+                    userAnswer === correctAnswer ? "4px solid #1cf306" : "4px solid red";
             } else {
                 updatedStyles[key] = "2px solid red"; // Default red if no correct answer
             }
