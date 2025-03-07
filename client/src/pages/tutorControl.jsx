@@ -7,23 +7,30 @@ import Problem from '../components/problem'
 import Bot from '../components/bot'
 import Editor from '../components/editor'
 import Output from '../components/output'
+import ControlOutput from "../components/controlOutput";
 import { modules } from '../constant'
 
-
-const Tutor = () => {
+const TutorControl = () => {
     const navigate = useNavigate();
     const location = useLocation();
-
     const { moduleId, questionId } = useParams();
+    const [output, setOutput] = useState("");
+    const [loading, setLoading] = useState(false); // Track loading state
+    const [isTyping, setIsTyping] = useState(false);
+    const [feedbackMessage, setFeedbackMessage] = useState(""); // ✅ New state
+
+
+
+    const [botMessages, setBotMessages] = useState([
+        { sender: "bot", text: "Hi! Welcome to the Java Course. Start coding on the right. If you run into any errors, just ask. If the output is wrong, I will try my best to guide you." },
+    ]);
 
     console.log("You got this in the parameters", moduleId, questionId);
-
     console.log("Modules data:", modules);
     console.log("Received moduleId:", moduleId, "questionId:", questionId);
 
     const queryParams = new URLSearchParams(location.search);
     let studentId = queryParams.get("studentId") || sessionStorage.getItem("studentId");
-
 
     useEffect(() => {
         if (!studentId) {
@@ -33,12 +40,6 @@ const Tutor = () => {
         }
     }, [navigate, studentId]);
 
-    const [output, setOutput] = useState("");
-    const [loading, setLoading] = useState(false); // Track loading state
-    const [botMessages, setBotMessages] = useState([
-        { sender: "bot", text: "Hi! Welcome to the Java Course. Start coding on the right. Remember you only get one try per blank." },
-    ]);
-    const [isTyping, setIsTyping] = useState(false);
 
     const module = modules.find(m => m.moduleId === Number(moduleId));
     console.log("Matched module:", module);
@@ -46,49 +47,12 @@ const Tutor = () => {
     const question = module ? module.questions.find(q => q.questionId === Number(questionId)) : null;
     console.log("Matched question:", question);
 
-
     useEffect(() => {
         if (!question) {
             console.error("Question not found");
             navigate("/home");
         }
     }, [question, navigate]);
-
-    const storeConversationHistory = async () => {
-        if (!studentId || !moduleId || !questionId) return;
-
-        const timestamp = new Date().toISOString(); // Timestamp as key
-        const conversationData = {
-            moduleId: String(moduleId), // Ensure it's stored as a string
-            questionId: String(questionId),
-            timestamp: timestamp,
-            messages: botMessages, // Store the conversation messages
-        };
-
-        try {
-            await fetch("http://localhost:5001/api/storeConversation", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ studentId, conversationData }),
-            });
-            console.log("Conversation history saved.");
-        } catch (error) {
-            console.error("Failed to store conversation history:", error);
-        }
-    };
-
-    useEffect(() => {
-        const handleUnload = (event) => {
-            console.log(`Saving conversation history before closing...`);
-            storeConversationHistory(); // Save when closing the browser/tab
-        };
-
-        window.addEventListener("beforeunload", handleUnload);
-
-        return () => {
-            window.removeEventListener("beforeunload", handleUnload);
-        };
-    }, [botMessages]);
 
     const sanitizeCode = (code) => {
         return code
@@ -146,10 +110,13 @@ const Tutor = () => {
         } else {
             setOutput(result.output); // Display the output
             if (isCorrect) {
+                const successMessage = "Congratulations, you got the right answer and can move on!";
+                setFeedbackMessage(successMessage); // ✅ Update feedback message
                 setBotMessages((prevMessages) => [
                     ...prevMessages,
-                    { sender: "bot", text: "Congratulations, you got the right answer and can move on!" },
+                    { sender: "bot", text: successMessage },
                 ]);
+                console.log("Got the right answer?")
                 try {
                     const response = await fetch("http://localhost:5001/api/student-progress", {
                         method: "POST",
@@ -178,51 +145,7 @@ const Tutor = () => {
         }
     };
 
-    const sendMessage = async (message) => {
-        // Append user message to chat
-        setBotMessages((prevMessages) => [...prevMessages, { sender: "user", text: message }]);
-
-        // Simulate bot typing
-        setIsTyping(true);
-
-        try {
-            // Send conversation history to ChatGPT
-            const response = await fetch("http://localhost:5001/api/chat", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    messages: botMessages.concat({ sender: "user", text: message }).map((msg) => ({
-                        role: msg.sender === "user" ? "user" : "assistant",
-                        content: msg.text,
-                    })),
-                }),
-            });
-
-            const data = await response.json();
-
-            if (data.error) {
-                throw new Error(data.error);
-            }
-
-            // Append ChatGPT response to chat
-            setBotMessages((prevMessages) => [
-                ...prevMessages,
-                { sender: "bot", text: data.response },
-            ]);
-        } catch (error) {
-            setBotMessages((prevMessages) => [
-                ...prevMessages,
-                { sender: "bot", text: "Error: Could not fetch a response. Please try again." },
-            ]);
-        } finally {
-            setIsTyping(false);
-        }
-    };
-
     if (!question) return null;
-
     return (
         <div className="tutor">
             <Header topic={question.headerTopic} problem={`Problem ${questionId}`} />
@@ -240,15 +163,11 @@ const Tutor = () => {
                 />
             </div>
             <div className="bottomPart">
-                <Bot
-                    messages={botMessages}
-                    isTyping={isTyping}
-                    onSendMessage={sendMessage}
-                />
+                <ControlOutput CorrectAnswers={question.correctAnswers} studentId={studentId} moduleId={moduleId} questionId={questionId} feedbackMessage={feedbackMessage} />
                 <Output output={output} loading={loading} />
             </div>
         </div>
     )
 }
 
-export default Tutor
+export default TutorControl

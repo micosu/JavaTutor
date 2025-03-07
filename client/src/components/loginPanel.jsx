@@ -20,10 +20,16 @@ const LoginPanel = () => {
             });
 
             const data = await response.json();
-
+            console.log("Data from login - ", data)
             if (response.ok) {
                 sessionStorage.setItem('studentId', data.user._id);
-                navigate(`/home?studentId=${data.user._id}`);
+                if (data.user.type == "test") {
+                    navigate(`/home?studentId=${data.user._id}`);
+                }
+                else if (data.user.type == "control") {
+                    navigate(`/dashboard?studentId=${data.user._id}`);
+                }
+
             } else {
                 setError(data.message || 'Invalid Unique ID');
             }

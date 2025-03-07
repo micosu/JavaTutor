@@ -4,36 +4,22 @@ import "../assets/css/tutor.css";
 import CodeDisplay from "./codeDisplay";
 import Bot from "./bot";
 
-const Editor = ({ onRunCode, setBotMessages, setIsTyping }) => {
+const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemStatement, initialCorrectAnswers }) => {
     const [completedCode, setCompletedCode] = useState("");
     const [userInputs, setUserInputs] = useState({}); // User answers from CodeDisplay
     // const [isTyping, setIsTyping] = useState(false); // State for loader
+    const [conversationHistory, setConversationHistory] = useState("")
 
 
     const handleCodeChange = (fullCode) => {
         setCompletedCode(fullCode);
     };
 
-    const problemStatement = "Write a Java Program to run a for loop to print the numbers from 1 to 5 in series."
-    const code = `
-    //Define Class
-    public class PrintNumbers {
-        //Define Function
-        public static void main(String[] args) {
-            //For loop
-            for (int i = ___; i ___ 5; i___ ) {
-                //Print Statement
-                System.out.println(i);
-            //Closing Bracket
-            }
-        }
-    }
-    `;
+    // const problemStatement = "Write a Java Program to run a for loop to print the numbers from 1 to 5 in series."
+    const code = initialCode;
 
-    const correctAnswers = ["1", "<=", "++"];
-
-
-
+    const correctAnswers = initialCorrectAnswers;
+    console.log("Correct Answers", correctAnswers);
     const handleRun = async () => {
         const userAnswers = Object.values(userInputs);
         console.log("User Answers:", userAnswers);
@@ -41,10 +27,11 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping }) => {
         codeDisplayValidation?.click();
 
         // Validate user answers
-        const isCorrect = correctAnswers.every((answer, index) => {
-            return completedCode.includes(answer);
-        });
+        const isCorrect =
+            userAnswers.length === correctAnswers.length &&
+            userAnswers.every((answer, index) => answer === correctAnswers[index]);
 
+        console.log("Is correct is", isCorrect, correctAnswers, userAnswers)
         if (onRunCode) {
             onRunCode(completedCode, isCorrect); // Pass the correctness flag
         }
@@ -74,6 +61,7 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping }) => {
                     problemStatement: problemStatement,
                     userAnswers,
                     correctAnswers,
+                    conversationHistory,
                 }), // Pass the user's answers to the backend
             });
 
@@ -83,6 +71,7 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping }) => {
                 throw new Error(data.error);
             }
 
+            setConversationHistory((prevHistory) => prevHistory + `\nBot: ${data.suggestion}`);
             // Append ChatGPT's debugging suggestion
             setBotMessages((prevMessages) => [
                 ...prevMessages,

@@ -6,7 +6,8 @@ const Problem = ({ statement, input, output }) => {
         <div className="problem">
             <p className="problemTitle inter-bold">Problem</p>
             <div className="problemDescription inter-regular">
-                <p className="statement">{statement}</p>
+                <pre className="statement">{statement}</pre>
+
                 <div className="input">
                     <p className="inter-bold">Input Format</p>
                     <p>{input}</p>

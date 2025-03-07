@@ -5,6 +5,13 @@ import { Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/login';
 import Tutor from './pages/tutor';
 import Dashboard from './pages/dashboard';
+import MCQPage from './pages/tutor-mcq';
+import ConsentForm from './pages/consentForm';
+// import Test from './pages/test';
+import TestPage from './pages/test';
+import DashboardControl from './pages/dashboardControl';
+import TutorControl from './pages/tutorControl';
+import TutorMCQControl from './pages/tutor-mcq-control';
 
 function App() {
   const [message, setMessage] = useState('');
@@ -28,9 +35,14 @@ function App() {
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/home" element={<Dashboard />} />
-      <Route path="/pre-test" element={<h1>Pre-Test Page</h1>} />
-      <Route path="/post-test" element={<h1>Post-Test Page</h1>} />
-      <Route path="/tutor" element={<Tutor />} />
+      <Route path="/dashboard" element={<DashboardControl />} />
+      <Route path="/pre-test/:moduleId" element={<TestPage />} />  {/* ✅ Fix: Change hyphen to / */}
+      <Route path="/post-test/:moduleId" element={<TestPage />} /> {/* ✅ Fix: Change hyphen to / */}
+      <Route path="/tutor/:moduleId/:questionId" element={<Tutor />} />
+      <Route path="/mcq/:moduleId/:questionId" element={<MCQPage />} />
+      <Route path="/tutorControl/:moduleId/:questionId" element={<TutorControl />} />
+      <Route path="/mcqControl/:moduleId/:questionId" element={<TutorMCQControl />} />
+      <Route path="/consent-form" element={<ConsentForm />} />
     </Routes>
   );
 }

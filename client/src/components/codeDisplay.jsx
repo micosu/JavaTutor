@@ -70,7 +70,7 @@ const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange 
                     const key = `${lineIndex}-${partIndex}`;
                     return (
                         <React.Fragment key={partIndex}>
-                            <span style={{ color: isComment ? "green" : "white" }}>{part}</span>
+                            <span style={{ fontSize: "18px", color: isComment ? "green" : "white" }}>{part}</span>
                             {partIndex < parts.length - 1 && (
                                 <input
                                     type="text"

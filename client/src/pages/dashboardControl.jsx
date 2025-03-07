@@ -49,7 +49,6 @@ const modulesData = [
             { text: "Question 10", questionType: "mcq" },
             { text: "Question 11", questionType: "mcq" },
             { text: "Question 12", questionType: "mcq" },
-            { text: "Question 13", questionType: "tutor" },
         ]
     },
     {
@@ -159,78 +158,6 @@ const Dashboard = () => {
     const [studentName, setStudentName] = useState("");
     const [studentGroup, setStudentGroup] = useState("");
 
-    const [preTestCompleted, setPreTestCompleted] = useState({}); // ✅ Track pre-test completion per module
-    const [completedQuestions, setCompletedQuestions] = useState({}); // ✅ Track completed questions per module
-
-    useEffect(() => {
-        if (!studentId) return;
-
-        const fetchTestProgress = async () => {
-            try {
-                const response = await fetch(`http://localhost:5001/api/student-test-progress/${studentId}`);
-                if (!response.ok) {
-                    throw new Error("Failed to fetch test progress");
-                }
-                const progressData = await response.json();
-                console.log("Student test progress:", progressData.tests);
-
-                // ✅ Create an object tracking pre-test completion for each module
-                const preTestStatus = {};
-                modulesData.forEach((module, index) => {
-                    const testField = `pre-test-${index}`;
-                    preTestStatus[index] = progressData.tests?.[testField] || false; // Check if pre-test exists
-                });
-
-                setPreTestCompleted(preTestStatus);
-            } catch (error) {
-                console.error("Error fetching pre-test progress:", error);
-            }
-        };
-
-        const fetchCompletedQuestions = async () => {
-            try {
-                const response = await fetch(`http://localhost:5001/api/student-progress/${studentId}`);
-                if (!response.ok) {
-                    throw new Error("Failed to fetch progress");
-                }
-
-                const completedData = await response.json();
-                console.log("Completed questions data:", completedData);
-
-                // ✅ Create an object tracking completed questions per module
-                const completedStatus = {};
-                modulesData.forEach((module, index) => {
-                    const totalQuestions = module.questions.length;
-                    const completedCount = completedData.filter(q => q.moduleId === index).length;
-                    completedStatus[index] = completedCount === totalQuestions; // ✅ True if all questions are done
-                });
-
-                setCompletedQuestions(completedStatus);
-            } catch (error) {
-                console.error("Error fetching completed questions:", error);
-            }
-        };
-
-        fetchTestProgress();
-        fetchCompletedQuestions();
-    }, [studentId]); // ✅ Fetch on studentId change
-
-
-    const handlePreTestCompletion = (moduleId) => {
-        setPreTestCompleted((prev) => ({
-            ...prev,
-            [moduleId]: true, // ✅ Update state in real-time
-        }));
-    };
-
-    const handleQuestionCompletion = (moduleId) => {
-        setCompletedQuestions((prev) => ({
-            ...prev,
-            [moduleId]: true, // ✅ Mark the module as complete
-        }));
-    };
-
-
     useEffect(() => {
         if (!studentId) return; // Don't fetch if no studentId is provided
 
@@ -241,8 +168,9 @@ const Dashboard = () => {
                     throw new Error("Failed to fetch student data");
                 }
                 const data = await response.json();
-                setStudentName(data.name); // Update state with fetched name
                 setStudentGroup(data.type);
+                console.log("Student data fetched from dashboard:", data);
+                setStudentName(data.name); // Update state with fetched name
             } catch (error) {
                 console.error("Error fetching student data:", error);
                 setStudentName("Unknown Student"); // Fallback if error occurs
@@ -285,7 +213,7 @@ const Dashboard = () => {
                             {/* Show questions only when a module is clicked */}
                             {activeModule === index && module.type === "module" && hasConsent && (
                                 <div className="questions">
-                                    <TestButton studentId={studentId} moduleId={index} type="pre-test" onPreTestComplete={handlePreTestCompletion} />
+                                    <TestButton studentId={studentId} moduleId={index} type="pre-test" />
 
                                     {module.questions.map((question, qIndex) => (
                                         <QuestionButton
@@ -294,14 +222,11 @@ const Dashboard = () => {
                                             moduleId={index}
                                             questionId={qIndex + 1}
                                             question={question}
-                                            type={studentGroup}
-                                            isDisabled={!preTestCompleted[index]}
-                                            onQuestionComplete={handleQuestionCompletion}
-
+                                            type = {studentGroup}
                                         />
                                     ))}
 
-                                    <TestButton studentId={studentId} moduleId={index} type="post-test" isDisabled={!(preTestCompleted[index] && completedQuestions[index])} />
+                                    <TestButton studentId={studentId} moduleId={index} type="post-test" />
                                 </div>
                             )}
                         </div>

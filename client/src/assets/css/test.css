@@ -1,0 +1,106 @@
+/* Centered test page layout */
+.test-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Title Styling */
+.test-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Student ID display */
+.student-id {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* Question Card */
+.question-card {
+    background: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Question Text */
+.question-text {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+/* Code Block */
+.code-block {
+    background: #272822;
+    color: #f8f8f2;
+    padding: 10px;
+    font-family: "Courier New", monospace;
+    border-radius: 5px;
+    text-align: left;
+    overflow-x: auto;
+}
+
+/* Options Container */
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Option Label Styling */
+.option-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    padding: 8px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.option-label:hover {
+    background: #f1f1f1;
+}
+
+/* Radio Button Styling */
+.option-input {
+    transform: scale(1.2);
+}
+
+/* Submit Button */
+.submit-button {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    color: #fff;
+    background: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.submit-button:hover {
+    background: #0056b3;
+}
+
+/* Error Message */
+.error-text {
+    text-align: center;
+    color: red;
+    font-size: 18px;
+    margin-top: 20px;
+}
