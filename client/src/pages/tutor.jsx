@@ -8,6 +8,7 @@ import Bot from '../components/bot'
 import Editor from '../components/editor'
 import Output from '../components/output'
 import { modules } from '../constant'
+import logo from '../assets/images/Logo.svg'
 
 
 const Tutor = () => {

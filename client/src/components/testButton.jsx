@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const TestButton = ({ studentId, moduleId, type, isDisabled, onPreTestComplete }) => {
     const navigate = useNavigate();
+    console.log("isDisabled", isDisabled);
     const [checked, setChecked] = useState(false);
 
     const fetchProgress = async () => {

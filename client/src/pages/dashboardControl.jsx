@@ -158,6 +158,135 @@ const Dashboard = () => {
     const [studentName, setStudentName] = useState("");
     const [studentGroup, setStudentGroup] = useState("");
 
+    const [preTestCompleted, setPreTestCompleted] = useState({}); // ✅ Track pre-test completion per module
+
+    const initializeCompletedQuestions = () => {
+        const initialState = {};
+        modulesData.forEach((module, index) => {
+            initialState[index] = []; // ✅ Ensure every module starts with an empty array
+        });
+        return initialState;
+    };
+
+    const [completedQuestions, setCompletedQuestions] = useState(initializeCompletedQuestions);
+
+    useEffect(() => {
+        if (!studentId) return;
+
+        const fetchTestProgress = async () => {
+            try {
+                const response = await fetch(`http://localhost:5001/api/student-test-progress/${studentId}`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch test progress");
+                }
+                const progressData = await response.json();
+                console.log("Student test progress:", progressData.tests);
+
+                // ✅ Create an object tracking pre-test completion for each module
+                const preTestStatus = {};
+                modulesData.forEach((module, index) => {
+                    const testField = `pre-test-${index}`;
+                    preTestStatus[index] = progressData.tests?.[testField] || false; // Check if pre-test exists
+                });
+
+                setPreTestCompleted(preTestStatus);
+            } catch (error) {
+                console.error("Error fetching pre-test progress:", error);
+            }
+        };
+
+        const fetchCompletedQuestions = async () => {
+            try {
+                const response = await fetch(`http://localhost:5001/api/student-progress/${studentId}`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch progress");
+                }
+
+                let completedData = await response.json();
+                console.log("Raw Completed Questions Data:", completedData);
+
+                // ✅ Filter out empty strings or invalid data
+                completedData = completedData.filter(q => typeof q === "object" && q.moduleId !== undefined && q.questionId !== undefined);
+                console.log("Filtered Completed Questions Data:", completedData);
+
+                // ✅ Ensure all questions in a module are completed before unlocking post-test
+                const completedStatus = {};
+                modulesData.forEach((module, index) => {
+                    if (!module.questions || !Array.isArray(module.questions)) {
+                        console.warn(`Module ${index} (${module.name}) has no questions array`);
+                        completedStatus[index] = false; // Assume incomplete if no questions
+                        return;
+                    }
+
+                    // Get the list of completed questions for this module
+                    const completedQuestions = completedData
+                        .filter(q => String(q.moduleId) === String(index))
+                        .map(q => String(q.questionId));
+
+                    console.log(`Module ${index} - Completed Questions:`, completedQuestions);
+
+                    // ✅ Ensure all questions in the module are completed
+                    const allQuestionsDone = module.questions.every((_, qIndex) =>
+                        completedQuestions.includes(String(qIndex + 1))
+                    );
+
+                    completedStatus[index] = allQuestionsDone;
+                    console.log("Completed Status ", completedStatus)
+                });
+                setCompletedQuestions((prev) => ({ ...prev, ...completedStatus }));
+            } catch (error) {
+                console.error("Error fetching completed questions:", error);
+            }
+        };
+
+        fetchTestProgress();
+        fetchCompletedQuestions();
+    }, [studentId]); // ✅ Fetch on studentId change
+
+
+    const handlePreTestCompletion = (moduleId) => {
+        setPreTestCompleted((prev) => ({
+            ...prev,
+            [moduleId]: true, // ✅ Update state in real-time
+        }));
+    };
+
+    const handleQuestionCompletion = (moduleId, questionId) => {
+        if (questionId === undefined || questionId === null) {
+            console.error(`Invalid questionId detected for module ${moduleId}:`, questionId);
+            return; // Stop execution if questionId is invalid
+        }
+
+        setCompletedQuestions((prev) => {
+            const totalQuestions = modulesData[moduleId]?.questions?.length || 0;
+
+            // ✅ Ensure completedQuestions[moduleId] is always an array
+            const completedInModule = Array.isArray(prev[moduleId]) ? [...prev[moduleId]] : [];
+
+            // ✅ Add the question only if not already present
+            if (!completedInModule.includes(questionId)) {
+                completedInModule.push(questionId);
+            }
+
+            // ✅ Check if all questions are done
+            const allQuestionsDone = completedInModule.length === totalQuestions;
+
+            console.log(`Module ${moduleId} - Completed Questions:`, completedInModule);
+            console.log(`Module ${moduleId} - Total Questions: ${totalQuestions}, All Done: ${allQuestionsDone}`);
+
+            return {
+                ...prev,
+                [moduleId]: allQuestionsDone ? ["ALL_DONE"] : completedInModule, // ✅ Always an array
+            };
+        });
+    };
+
+
+
+    useEffect(() => {
+        console.log("Updated completedQuestions:", completedQuestions);
+    }, [completedQuestions]);
+
     useEffect(() => {
         if (!studentId) return; // Don't fetch if no studentId is provided
 
@@ -213,7 +342,7 @@ const Dashboard = () => {
                             {/* Show questions only when a module is clicked */}
                             {activeModule === index && module.type === "module" && hasConsent && (
                                 <div className="questions">
-                                    <TestButton studentId={studentId} moduleId={index} type="pre-test" />
+                                    <TestButton studentId={studentId} moduleId={index} type="pre-test" onPreTestComplete={handlePreTestCompletion} />
 
                                     {module.questions.map((question, qIndex) => (
                                         <QuestionButton
@@ -222,11 +351,16 @@ const Dashboard = () => {
                                             moduleId={index}
                                             questionId={qIndex + 1}
                                             question={question}
-                                            type = {studentGroup}
+                                            type={studentGroup}
+                                            isDisabled={!preTestCompleted[index]}
+                                            onQuestionComplete={() => handleQuestionCompletion(index, qIndex + 1)}
                                         />
                                     ))}
 
-                                    <TestButton studentId={studentId} moduleId={index} type="post-test" />
+                                    <TestButton studentId={studentId} moduleId={index} type="post-test" isDisabled={
+                                        !preTestCompleted[index] ||
+                                        !(Array.isArray(completedQuestions[index]) && completedQuestions[index].includes("ALL_DONE"))
+                                    } />
                                 </div>
                             )}
                         </div>
