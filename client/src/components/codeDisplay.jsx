@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange }) => {
     const [inputs, setInputs] = useState({}); // To track user input for blanks
     const [inputStyles, setInputStyles] = useState({}); // To track border styles for inputs
 
+    const validateRef = useRef(() => { });
     // Update inputs as user types
     const handleChange = (key, value) => {
         const updatedInputs = { ...inputs, [key]: value || "" }; // Ensure no undefined values
@@ -21,23 +22,36 @@ const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange 
     };
 
     // Validate inputs when the Run button is clicked
-    const validateInputs = () => {
-        const updatedStyles = {};
+    // const validateInputs = () => {
+    //     const updatedStyles = {};
 
-        // Iterate through each placeholder and check against correct answers
-        Object.keys(inputs).forEach((key, index) => {
-            const userAnswer = inputs[key];
-            const correctAnswer = correctAnswers[index];
-            if (correctAnswer !== undefined) {
+    //     // Iterate through each placeholder and check against correct answers
+    //     Object.keys(inputs).forEach((key, index) => {
+    //         const userAnswer = (inputs[key] || "").trim();
+    //         const correctAnswer = (correctAnswers[index] || "").trim();
+    //         updatedStyles[key] =
+    //             userAnswer === correctAnswer ? "4px solid #1cf306" : "4px solid red";
+    //     });
+
+    //     setInputStyles(updatedStyles); // Update the input styles based on validation
+    // };
+
+    // Inside useEffect so the latest `inputs` are always captured
+    useEffect(() => {
+        validateRef.current = () => {
+            const updatedStyles = {};
+
+            Object.keys(inputs).forEach((key, index) => {
+                const userAnswer = (inputs[key] || "").trim();
+                const correctAnswer = (correctAnswers[index] || "").trim();
+
                 updatedStyles[key] =
                     userAnswer === correctAnswer ? "4px solid #1cf306" : "4px solid red";
-            } else {
-                updatedStyles[key] = "2px solid red"; // Default red if no correct answer
-            }
-        });
+            });
 
-        setInputStyles(updatedStyles); // Update the input styles based on validation
-    };
+            setInputStyles(updatedStyles);
+        };
+    }, [inputs, correctAnswers]);
 
     // Construct the full code with user inputs
     const constructFullCode = (currentInputs = inputs) => {
@@ -108,7 +122,7 @@ const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange 
             <button
                 id="code-display-validation"
                 style={{ display: "none" }}
-                onClick={validateInputs}
+                onClick={() => validateRef.current()}
             />
         </div>
     );

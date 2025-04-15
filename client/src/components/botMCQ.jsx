@@ -5,7 +5,7 @@ import BotMessage from "./botMessage";
 import UserMessage from "./userMessage";
 // import TypingLoader from "./typingLoader";
 
-const BotMCQ = ({ messages, isTyping, onSendMessage }) => {
+const BotMCQ = ({ messages, isTyping, onSendMessage, onDone }) => {
     const [userInput, setUserInput] = useState("");
     const chatEndRef = useRef(null);
 
@@ -24,6 +24,11 @@ const BotMCQ = ({ messages, isTyping, onSendMessage }) => {
             setUserInput(""); // Clear the input box
         }
     };
+
+    const lastMessage = messages.length > 0 ? messages[messages.length - 1].text : "";
+    const showDoneButton = lastMessage.includes("Press Done to store your progress");
+    console.log("showDoneButton", showDoneButton, lastMessage)
+
     return (
         <div className="botMCQ">
             <p>Tutor</p>
@@ -39,6 +44,11 @@ const BotMCQ = ({ messages, isTyping, onSendMessage }) => {
                     {/* Scroll anchor */}
                     <div ref={chatEndRef} />
                     {isTyping && <TypingLoader />}
+                    {showDoneButton && (
+                        <button className="done-button" onClick={onDone}>
+                            ✅ Done
+                        </button>
+                    )}
                 </div>
             </div>
             <div className="input-box">

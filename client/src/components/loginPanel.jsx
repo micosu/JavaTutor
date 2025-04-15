@@ -2,6 +2,10 @@ import React, { useState } from 'react'
 import '../assets/css/login.css'
 import users from '../assets/images/users.svg'
 import { useNavigate } from 'react-router-dom';
+
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
+console.log("Base url is -", BASE_URL)
+
 const LoginPanel = () => {
     const [rollNumber, setRollNumber] = useState('');
     const [error, setError] = useState('');
@@ -13,7 +17,7 @@ const LoginPanel = () => {
             return;
         }
         try {
-            const response = await fetch('http://localhost:5001/api/login', {
+            const response = await fetch(`${BASE_URL}/api/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ rollNumber }),

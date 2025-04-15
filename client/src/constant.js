@@ -128,15 +128,15 @@ public class SubtractionQuiz {
         }
 
         // Close the scanner
-        input.________();
+        input.close();
     }
 }
 `,
-                options: ["Swap number1 and number2; nextInt(); number1 - number2; close();",
-                    "Reverse number1 and number2; nextIn(); number2 - number1; stop();",
-                    "Set number1 equal to number2; nextIn(); number1 - number2; terminate();",
-                    "Switch number1 and number2; nextDouble(); number1 + number2; end();"],  // ✅ Multiple-choice options
-                correctAnswer: "Swap number1 and number2; nextInt(); number1 - number2; close();"
+                options: ["Swap number1 and number2; nextInt(); number1 - number2;",
+                    "Reverse number1 and number2; nextIn(); number2 - number1;",
+                    "Set number1 equal to number2; nextIn(); number1 - number2;",
+                    "Switch number1 and number2; nextDouble(); number1 + number2;"],  // ✅ Multiple-choice options
+                correctAnswer: "Swap number1 and number2; nextInt(); number1 - number2;"
             }
         ]
     },

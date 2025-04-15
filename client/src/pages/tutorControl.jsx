@@ -10,6 +10,7 @@ import Output from '../components/output'
 import ControlOutput from "../components/controlOutput";
 import { modules } from '../constant'
 
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 const TutorControl = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -64,7 +65,7 @@ const TutorControl = () => {
     const runCode = async (code) => {
         console.log("Sending this code:", code);
         const sanitizedCode = sanitizeCode(code);
-        const url = "http://localhost:5001/api/execute";
+        const url = `${BASE_URL}/api/execute`;
 
         const requestBody = {
             clientId: "19f502d67b809bb3491c24a025bcef54", // Replace with your actual Client ID
@@ -110,7 +111,7 @@ const TutorControl = () => {
         } else {
             setOutput(result.output); // Display the output
             if (isCorrect) {
-                const successMessage = "Congratulations, you got the right answer and can move on!";
+                const successMessage = "Congratulations, you got the right answer and can move on by closing this browser window!";
                 setFeedbackMessage(successMessage); // ✅ Update feedback message
                 setBotMessages((prevMessages) => [
                     ...prevMessages,
@@ -118,7 +119,7 @@ const TutorControl = () => {
                 ]);
                 console.log("Got the right answer?")
                 try {
-                    const response = await fetch("http://localhost:5001/api/student-progress", {
+                    const response = await fetch(`${BASE_URL}/api/student-progress`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -130,7 +131,7 @@ const TutorControl = () => {
                         throw new Error("Failed to update progress");
                     }
 
-                    const refreshProgress = await fetch(`http://localhost:5001/api/student-progress/${studentId}`);
+                    const refreshProgress = await fetch(`${BASE_URL}/api/student-progress/${studentId}`);
                     const newProgress = await refreshProgress.json();
                     console.log("Updated progress:", newProgress);
                 } catch (error) {

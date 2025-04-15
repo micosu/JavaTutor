@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/css/consentForm.css"
+
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 const ConsentForm = () => {
     const navigate = useNavigate();
     const [studentId, setStudentId] = useState(null);
@@ -43,7 +45,7 @@ const ConsentForm = () => {
         }
 
         try {
-            const response = await fetch("http://localhost:5001/api/storeConsent", {
+            const response = await fetch(`${BASE_URL}/api/storeConsent`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

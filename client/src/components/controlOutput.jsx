@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import '../assets/css/tutor.css'
 import BotMessage from "./botMessage";
 
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
+
 const ControlOutput = ({ CorrectAnswers, studentId, moduleId, questionId, feedbackMessage }) => {
     const [revealed, setRevealed] = useState(false);
     const chatEndRef = useRef(null);
@@ -18,7 +20,7 @@ const ControlOutput = ({ CorrectAnswers, studentId, moduleId, questionId, feedba
         setRevealed(true);
 
         try {
-            const response = await fetch("http://localhost:5001/api/reveal-answer", {
+            const response = await fetch(`${BASE_URL}/api/reveal-answer`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

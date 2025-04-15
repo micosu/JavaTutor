@@ -9,6 +9,7 @@ import CodeDisplayMCQ from "../components/codeDisplayMCQ";
 import MCQOptions from "../components/mcqQuestion";
 import BotMCQ from "../components/botMCQ";
 
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 const MCQPage = () => {
     const { moduleId, questionId } = useParams();
     const navigate = useNavigate();
@@ -55,7 +56,7 @@ const MCQPage = () => {
 
         try {
             // Send conversation history to ChatGPT
-            const response = await fetch("http://localhost:5001/api/chat", {
+            const response = await fetch(`${BASE_URL}/api/chat`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -94,7 +95,7 @@ const MCQPage = () => {
         if (sender === "bot" && feedbackMessage.includes("Congratulations")) {
             console.log("Got the right answer?")
             try {
-                const response = await fetch("http://localhost:5001/api/student-progress", {
+                const response = await fetch(`${BASE_URL}/api/student-progress`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -106,7 +107,7 @@ const MCQPage = () => {
                     throw new Error("Failed to update progress");
                 }
 
-                const refreshProgress = await fetch(`http://localhost:5001/api/student-progress/${studentId}`);
+                const refreshProgress = await fetch(`${BASE_URL}/api/student-progress/${studentId}`);
                 const newProgress = await refreshProgress.json();
                 console.log("Updated progress:", newProgress);
             } catch (error) {
@@ -115,33 +116,73 @@ const MCQPage = () => {
         }
     };
 
+    const [saving, setSaving] = useState(false);
     const storeConversationHistory = async () => {
         if (!studentId || !moduleId || !questionId) return;
 
-        const timestamp = new Date().toISOString(); // Timestamp as key
+        setSaving(true); // Show "Saving conversation..." message
+
+        const timestamp = new Date().toISOString();
         const conversationData = {
-            moduleId: String(moduleId), // Ensure it's stored as a string
+            moduleId: String(moduleId),
             questionId: String(questionId),
             timestamp: timestamp,
-            messages: botMessages, // Store the conversation messages
+            messages: botMessages,
         };
 
+        const url = `${BASE_URL}/api/storeConversation`;
+        const data = JSON.stringify({ studentId, conversationData });
+
         try {
-            await fetch("http://localhost:5001/api/storeConversation", {
+            console.log("🚀 Saving conversation...");
+
+            // First try `fetch()`
+            const response = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ studentId, conversationData }),
+                body: data,
             });
-            console.log("Conversation history saved.");
+
+            console.log("✅ API Response:", response.status);
+
+            if (!response.ok) {
+                throw new Error(`API failed with status ${response.status}`);
+            }
+
+            // Save student progress
+            await fetch(`${BASE_URL}/api/student-progress`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ studentId, moduleId, questionId, isChecked: true }),
+            });
+
+            console.log("✅ Progress saved successfully!");
+
         } catch (error) {
-            console.error("Failed to store conversation history:", error);
+            console.error("❌ Error saving conversation or progress:", error);
         }
+
+        setSaving(false);
     };
 
+
+
     useEffect(() => {
-        const handleUnload = (event) => {
-            console.log(`Saving conversation history before closing...`);
-            storeConversationHistory(); // Save when closing the browser/tab
+        const handleUnload = async (event) => {
+            console.log("⚠️ Tab is attempting to close... Delaying closure by 5 seconds.");
+
+            setSaving(true); // Show saving message in UI
+
+            // Delay the tab close for 5 seconds
+            await new Promise(resolve => setTimeout(resolve, 5000));
+
+            await storeConversationHistory(); // Save conversation
+
+            console.log("✅ Conversation saved. Closing tab...");
+            setSaving(false); // Hide message
+
+            // Attempt to close the tab automatically (works only for self-opened tabs)
+            window.open("about:blank", "_self").close();
         };
 
         window.addEventListener("beforeunload", handleUnload);
@@ -150,6 +191,20 @@ const MCQPage = () => {
             window.removeEventListener("beforeunload", handleUnload);
         };
     }, [botMessages]);
+
+    const handleDoneClick = async () => {
+        console.log("✅ Done button clicked, saving progress and conversation...");
+
+        // Save conversation history
+        await storeConversationHistory();
+
+        // Notify student
+        setBotMessages((prevMessages) => [
+            ...prevMessages,
+            { sender: "bot", text: "✅ Your progress has been saved! You can proceed to the next question by closing this tab." },
+        ]);
+    };
+
     return (
         <div className="tutor">
             <Header topic={question.headerTopic} problem={`Problem ${questionId}`} />
@@ -164,7 +219,9 @@ const MCQPage = () => {
                     <BotMCQ
                         messages={botMessages}
                         isTyping={isTyping}
-                        onSendMessage={sendMessage} />
+                        onSendMessage={sendMessage}
+                        onDone={handleDoneClick}
+                    />
                 </div>
             </div>
         </div>

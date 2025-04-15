@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const QuestionButton = ({ studentId, moduleId, questionId, question, type, isDisabled , onQuestionComplete}) => {
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
+
+const QuestionButton = ({ studentId, moduleId, questionId, question, type, isDisabled, onQuestionComplete }) => {
     const navigate = useNavigate();
     const [checked, setChecked] = useState(false);
     console.log("You got this in the parameters", studentId, moduleId, questionId, question, type);
@@ -10,7 +12,7 @@ const QuestionButton = ({ studentId, moduleId, questionId, question, type, isDis
         const fetchProgress = async () => {
             try {
                 console.log("Fetching progress for:", studentId);
-                const response = await fetch(`http://localhost:5001/api/student-progress/${studentId}`);
+                const response = await fetch(`${BASE_URL}/api/student-progress/${studentId}`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch progress");
                 }
@@ -53,7 +55,7 @@ const QuestionButton = ({ studentId, moduleId, questionId, question, type, isDis
         setChecked(newCheckedState);
 
         try {
-            const response = await fetch("http://localhost:5001/api/student-progress", {
+            const response = await fetch(`${BASE_URL}/api/student-progress"`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

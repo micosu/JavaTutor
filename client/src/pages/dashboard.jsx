@@ -11,6 +11,8 @@ import TestButton from "../components/testButton";
 
 import book from "../assets/images/book.svg"
 
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
+
 const modulesData = [
     {
         name: "Consent Form",
@@ -131,7 +133,7 @@ const Dashboard = () => {
 
         const fetchConsentStatus = async () => {
             try {
-                const response = await fetch(`http://localhost:5001/api/checkConsent/${studentId}`);
+                const response = await fetch(`${BASE_URL}/api/checkConsent/${studentId}`);
                 if (!response.ok) throw new Error("Failed to fetch consent status");
 
                 const data = await response.json();
@@ -176,7 +178,7 @@ const Dashboard = () => {
 
         const fetchTestProgress = async () => {
             try {
-                const response = await fetch(`http://localhost:5001/api/student-test-progress/${studentId}`);
+                const response = await fetch(`${BASE_URL}/api/student-test-progress/${studentId}`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch test progress");
                 }
@@ -198,7 +200,7 @@ const Dashboard = () => {
 
         const fetchCompletedQuestions = async () => {
             try {
-                const response = await fetch(`http://localhost:5001/api/student-progress/${studentId}`);
+                const response = await fetch(`${BASE_URL}/api/student-progress/${studentId}`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch progress");
                 }
@@ -294,7 +296,7 @@ const Dashboard = () => {
 
         const fetchStudentName = async () => {
             try {
-                const response = await fetch(`http://localhost:5001/api/student/${studentId}`);
+                const response = await fetch(`${BASE_URL}/api/student/${studentId}`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch student data");
                 }

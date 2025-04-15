@@ -6,9 +6,10 @@ import Header from "../components/header";
 import ProblemMCQ from "../components/problemMCQ";
 import { modules } from '../constant'
 import CodeDisplayMCQ from "../components/codeDisplayMCQ";
-import MCQOptions from "../components/mcqQuestion";
+// import MCQOptions from "../components/mcqQuestion";
 import ControlOutputMCQ from "../components/controlOutputMCQ";
-
+import MCQOptionsControl from "../components/mcqQuestionControl";
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
 const TutorMCQControl = () => {
     const { moduleId, questionId } = useParams();
@@ -50,7 +51,7 @@ const TutorMCQControl = () => {
             setFeedbackMessage(feedbackMessage); // NEW: Store the latest bot feedback
             console.log("Got the right answer?")
             try {
-                const response = await fetch("http://localhost:5001/api/student-progress", {
+                const response = await fetch(`${BASE_URL}/api/student-progress`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -62,7 +63,7 @@ const TutorMCQControl = () => {
                     throw new Error("Failed to update progress");
                 }
 
-                const refreshProgress = await fetch(`http://localhost:5001/api/student-progress/${studentId}`);
+                const refreshProgress = await fetch(`${BASE_URL}/api/student-progress/${studentId}`);
                 const newProgress = await refreshProgress.json();
                 console.log("Updated progress:", newProgress);
             } catch (error) {
@@ -76,6 +77,7 @@ const TutorMCQControl = () => {
     ]);
     const [isTyping, setIsTyping] = useState(false);
 
+
     return (
         <div className="tutor">
             <Header topic={question.headerTopic} problem={`Problem ${questionId}`} />
@@ -83,7 +85,7 @@ const TutorMCQControl = () => {
                 <div className="leftPart">
                     <ProblemMCQ statement={question.problemStatement} />
                     <CodeDisplayMCQ code={question.code} />
-                    <MCQOptions options={question.options} correctAnswers={question.correctAnswer} question={question} onReceiveFeedback={handleMCQFeedback} setIsTyping={setIsTyping} />
+                    <MCQOptionsControl options={question.options} correctAnswers={question.correctAnswer} question={question} onReceiveFeedback={handleMCQFeedback} setIsTyping={setIsTyping} />
                 </div>
                 <div className="rightPart">
                     <ControlOutputMCQ CorrectAnswers={question.correctAnswer} studentId={studentId} moduleId={moduleId} questionId={questionId} feedbackMessage={feedbackMessage} />

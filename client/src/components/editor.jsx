@@ -4,6 +4,8 @@ import "../assets/css/tutor.css";
 import CodeDisplay from "./codeDisplay";
 import Bot from "./bot";
 
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
+
 const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemStatement, initialCorrectAnswers }) => {
     const [completedCode, setCompletedCode] = useState("");
     const [userInputs, setUserInputs] = useState({}); // User answers from CodeDisplay
@@ -21,7 +23,14 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
     const correctAnswers = initialCorrectAnswers;
     console.log("Correct Answers", correctAnswers);
     const handleRun = async () => {
-        const userAnswers = Object.values(userInputs);
+        // const userAnswers = Object.values(userInputs);
+        const rawUserAnswers = Object.values(userInputs);
+        const userAnswers = rawUserAnswers.map((answer) =>
+            typeof answer === "string" ? answer.trim() : answer
+        );
+        // const userAnswers = Object.values(userInputs).map((answer) =>
+        //     typeof answer === "string" ? answer.trim() : answer
+        // );
         console.log("User Answers:", userAnswers);
         const codeDisplayValidation = document.getElementById("code-display-validation");
         codeDisplayValidation?.click();
@@ -51,7 +60,7 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
 
     const callChatGPTAPI = async (userAnswers) => {
         try {
-            const response = await fetch("http://localhost:5001/api/debug", {
+            const response = await fetch(`${BASE_URL}/api/debug`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -102,6 +111,7 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
                     onInputsChange={setUserInputs}
                 />
             </div>
+            <p>If you're confident your answer is correct but it's marked wrong, try refreshing the page and submitting again. Also inform your professor about the Module ID and Question ID when this happens.</p>
             {/* <Bot isTyping={isTyping} /> */}
 
         </div>

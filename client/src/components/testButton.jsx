@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 const TestButton = ({ studentId, moduleId, type, isDisabled, onPreTestComplete }) => {
     const navigate = useNavigate();
     console.log("isDisabled", isDisabled);
     const [checked, setChecked] = useState(false);
+    const [isTestCompleted, setIsTestCompleted] = useState(false); // ✅ Track if test is completed
 
     const fetchProgress = async () => {
         try {
-            const response = await fetch(`http://localhost:5001/api/student-test-progress/${studentId}`);
+            const response = await fetch(`${BASE_URL}/api/student-test-progress/${studentId}`);
             if (!response.ok) {
                 throw new Error("Failed to fetch progress");
             }
@@ -22,6 +23,7 @@ const TestButton = ({ studentId, moduleId, type, isDisabled, onPreTestComplete }
             // ✅ Update checkbox without refreshing
             const isTestCompleted = progressData.tests?.[testField] || false;
             setChecked(isTestCompleted);
+            setIsTestCompleted(isTestCompleted);
 
             // ✅ Notify the parent (Dashboard) when the pre-test is done
             if (type === "pre-test" && isTestCompleted && onPreTestComplete) {
@@ -40,7 +42,7 @@ const TestButton = ({ studentId, moduleId, type, isDisabled, onPreTestComplete }
     const handleClick = (event) => {
         event.preventDefault();
         event.stopPropagation();
-        if (isDisabled) return;
+        if (isTestCompleted || isDisabled) return;
         let storedStudentId = sessionStorage.getItem("studentId") || studentId;
         if (!storedStudentId) {
             console.error("Student ID missing. Redirecting to login.");

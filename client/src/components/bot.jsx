@@ -3,7 +3,7 @@ import '../assets/css/tutor.css'
 import BotMessage from "./botMessage";
 import UserMessage from "./userMessage";
 
-const Bot = ({ messages, isTyping, onSendMessage }) => {
+const Bot = ({ messages, isTyping, onSendMessage, onDone }) => {
     const [userInput, setUserInput] = useState("");
     const safeMessages = Array.isArray(messages) ? messages : [];
     console.log("messages", messages)
@@ -26,6 +26,9 @@ const Bot = ({ messages, isTyping, onSendMessage }) => {
             handleSend();
         }
     };
+
+    const lastMessage = messages.length > 0 ? messages[messages.length - 1].text : "";
+    const showDoneButton = lastMessage.includes("Press Done to store your progress.");
     return (
         <div className="bot">
             <p className="inter-bold bot-title">Tutor</p>
@@ -41,6 +44,12 @@ const Bot = ({ messages, isTyping, onSendMessage }) => {
                     {/* Scroll anchor */}
                     <div ref={chatEndRef} />
                     {isTyping && <TypingLoader />} {/* Show loader while waiting for ChatGPT */}
+
+                    {showDoneButton && (
+                        <button className="done-button" onClick={onDone}>
+                            ✅ Done
+                        </button>
+                    )}
                 </div>
 
                 <div className="input-box">

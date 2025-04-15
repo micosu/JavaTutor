@@ -30,6 +30,57 @@ export const tests = [
                 ],
                 answer: "if (number >= 1 && number <= 10)"
             },
+            {
+                id: 3,
+                question: "What is the correct operator to replace ___ in the following condition so that it correctly checks if number is negative or greater than 100?",
+                code: `if (number < 0 ___ number > 100) {
+  System.out.println("The number is either negative or greater than 100.");
+}
+`,
+
+                options: [
+                    "&&",
+                    "!",
+                    "==",
+                    "||"
+                ],
+                answer: "||"
+            },
+            {
+                id: 4,
+                question: "What is the correct operator to replace ___ in the following condition so that it correctly checks if a student has passed with a score of 50 or higher?",
+                code: `if (score ___ 50) {
+   System.out.println("The student has passed.");
+} else {
+   System.out.println("The student has failed.");
+}
+`,
+
+                options: [
+                    "<",
+                    ">",
+                    ">=",
+                    "<="
+                ],
+                answer: ">="
+            },
+            {
+                id: 5,
+                question: "Which method should replace ________ to correctly read an integer input from the user?",
+                code: `Scanner input = new Scanner(System.in); 
+System.out.print("Enter a number: "); 
+int number = input.________(); 
+input.close();
+`,
+
+                options: [
+                    "readInt()",
+                    "getInt()",
+                    "nextInt()",
+                    "scanInt()"
+                ],
+                answer: "nextInt()"
+            },
         ]
 
     },
@@ -74,6 +125,78 @@ export const tests = [
        System.out.println("The number is positive and odd.");
    }
 }
+`,
+                options: [
+                    "1",
+                    "0",
+                    "-1",
+                    "null"
+                ],
+                answer: "0"
+            },
+            {
+                id: 4,
+                question: "Which logical operator should be used in the following Java condition to check if a temperature is below freezing (less than 0) or extremely hot (above 100)?",
+                code: `if (temperature < 0 ___ temperature > 100) {
+   System.out.println("Warning: Extreme temperature detected.");
+} else {
+   System.out.println("Temperature is within a normal range.");
+}
+`,
+                options: [
+                    "&&",
+                    "||",
+                    "==",
+                    "!="
+                ],
+                answer: "||"
+            },
+            {
+                id: 5,
+                question: "Which relational operator should be used in the following condition to determine if a person is eligible to vote, assuming the minimum voting age is 18?",
+                code: `if (age ___ 18) {
+   System.out.println("You are eligible to vote.");
+} else {
+   System.out.println("You are not eligible to vote.");
+}
+`,
+                options: [
+                    "<",
+                    ">=",
+                    "==",
+                    "<="
+                ],
+                answer: ">="
+            },
+            {
+                id: 6,
+                question: "You need to read an integer input from the user in a Java program. Which method should be used in the following code?",
+                code: `Scanner scanner = new Scanner(System.in);
+int value = scanner.________();
+`,
+                options: [
+                    "readInt()",
+                    "getInt()",
+                    "scanInt()",
+                    "nextInt()"
+                ],
+                answer: "nextInt()"
+            },
+            {
+                id: 7,
+                question: "Fill in the blank to complete the Java program that checks if a number is positive, negative, or zero.",
+                code: `public class NumberCheck {
+   public static void main(String[] args) {
+       int number = -3;
+
+       if (number > 0) {
+           System.out.println("The number is positive.");
+       } else if (number < ___) {
+           System.out.println("The number is negative.");
+       } else {
+           System.out.println("The number is zero.");
+       }
+   }
 `,
                 options: [
                     "1",
@@ -516,6 +639,25 @@ while (i < 5) {
             {
                 id: 3,
                 question: "In the provided printGrade method, how can you terminate the method early when the score is invalid?",
+                code: `public static void printGrade(int score) {
+   if (score < 0 || score > 100) {
+       System.out.println("Invalid score.");
+       ……………………………………
+   }
+  
+   if (score >= 90) {
+       System.out.println("A");
+   } else if (score >= 80) {
+       System.out.println("B");
+   } else if (score >= 70) {
+       System.out.println("C");
+   } else if (score >= 60) {
+       System.out.println("D");
+   } else {
+       System.out.println("F");
+   }
+}
+`,
                 options: [
                     "By not including a return statement.",
                     "By adding an extra else condition for invalid scores.",

@@ -10,6 +10,7 @@ import Output from '../components/output'
 import { modules } from '../constant'
 import logo from '../assets/images/Logo.svg'
 
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
 const Tutor = () => {
     const navigate = useNavigate();
@@ -37,7 +38,7 @@ const Tutor = () => {
     const [output, setOutput] = useState("");
     const [loading, setLoading] = useState(false); // Track loading state
     const [botMessages, setBotMessages] = useState([
-        { sender: "bot", text: "Hi! Welcome to the Java Course. Start coding on the right. Remember you only get one try per blank." },
+        { sender: "bot", text: "Hi! Welcome to the Java Course. Start coding on the right. Ask me if you get stuck at any point." },
     ]);
     const [isTyping, setIsTyping] = useState(false);
 
@@ -55,33 +56,72 @@ const Tutor = () => {
         }
     }, [question, navigate]);
 
+    const [saving, setSaving] = useState(false);
     const storeConversationHistory = async () => {
         if (!studentId || !moduleId || !questionId) return;
 
-        const timestamp = new Date().toISOString(); // Timestamp as key
+        setSaving(true); // Show "Saving conversation..." message
+
+        const timestamp = new Date().toISOString();
         const conversationData = {
-            moduleId: String(moduleId), // Ensure it's stored as a string
+            moduleId: String(moduleId),
             questionId: String(questionId),
             timestamp: timestamp,
-            messages: botMessages, // Store the conversation messages
+            messages: botMessages,
         };
 
+        const url = `${BASE_URL}/api/storeConversation`;
+        const data = JSON.stringify({ studentId, conversationData });
+
         try {
-            await fetch("http://localhost:5001/api/storeConversation", {
+            console.log("🚀 Saving conversation...");
+
+            // First try `fetch()`
+            const response = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ studentId, conversationData }),
+                body: data,
             });
-            console.log("Conversation history saved.");
+
+            console.log("✅ API Response:", response.status);
+
+            if (!response.ok) {
+                throw new Error(`API failed with status ${response.status}`);
+            }
+
+            // Save student progress
+            await fetch(`${BASE_URL}/api/student-progress`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ studentId, moduleId, questionId, isChecked: true }),
+            });
+
+            console.log("✅ Progress saved successfully!");
+
         } catch (error) {
-            console.error("Failed to store conversation history:", error);
+            console.error("❌ Error saving conversation or progress:", error);
         }
+
+        setSaving(false);
     };
 
+
     useEffect(() => {
-        const handleUnload = (event) => {
-            console.log(`Saving conversation history before closing...`);
-            storeConversationHistory(); // Save when closing the browser/tab
+        const handleUnload = async (event) => {
+            console.log("⚠️ Tab is attempting to close... Delaying closure by 5 seconds.");
+
+            setSaving(true); // Show saving message in UI
+
+            // Delay the tab close for 5 seconds
+            await new Promise(resolve => setTimeout(resolve, 5000));
+
+            await storeConversationHistory(); // Save conversation
+
+            console.log("✅ Conversation saved. Closing tab...");
+            setSaving(false); // Hide message
+
+            // Attempt to close the tab automatically (works only for self-opened tabs)
+            window.open("about:blank", "_self").close();
         };
 
         window.addEventListener("beforeunload", handleUnload);
@@ -90,6 +130,9 @@ const Tutor = () => {
             window.removeEventListener("beforeunload", handleUnload);
         };
     }, [botMessages]);
+
+
+
 
     const sanitizeCode = (code) => {
         return code
@@ -101,7 +144,7 @@ const Tutor = () => {
     const runCode = async (code) => {
         console.log("Sending this code:", code);
         const sanitizedCode = sanitizeCode(code);
-        const url = "http://localhost:5001/api/execute";
+        const url = `${BASE_URL}/api/execute`;
 
         const requestBody = {
             clientId: "19f502d67b809bb3491c24a025bcef54", // Replace with your actual Client ID
@@ -149,10 +192,10 @@ const Tutor = () => {
             if (isCorrect) {
                 setBotMessages((prevMessages) => [
                     ...prevMessages,
-                    { sender: "bot", text: "Congratulations, you got the right answer and can move on!" },
+                    { sender: "bot", text: "Congratulations, you got the right answer and can move on! Press Done to store your progress." },
                 ]);
                 try {
-                    const response = await fetch("http://localhost:5001/api/student-progress", {
+                    const response = await fetch(`${BASE_URL}/api/student-progress`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -164,7 +207,7 @@ const Tutor = () => {
                         throw new Error("Failed to update progress");
                     }
 
-                    const refreshProgress = await fetch(`http://localhost:5001/api/student-progress/${studentId}`);
+                    const refreshProgress = await fetch(`${BASE_URL}/api/student-progress/${studentId}`);
                     const newProgress = await refreshProgress.json();
                     console.log("Updated progress:", newProgress);
                 } catch (error) {
@@ -188,7 +231,7 @@ const Tutor = () => {
 
         try {
             // Send conversation history to ChatGPT
-            const response = await fetch("http://localhost:5001/api/chat", {
+            const response = await fetch(`${BASE_URL}/api/chat`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -224,9 +267,24 @@ const Tutor = () => {
 
     if (!question) return null;
 
+
+    const handleDoneClick = async () => {
+        console.log("✅ Done button clicked, saving progress and conversation...");
+
+        // Save conversation history
+        await storeConversationHistory();
+
+        // Notify student
+        setBotMessages((prevMessages) => [
+            ...prevMessages,
+            { sender: "bot", text: "✅ Progress saved! You can proceed to the next question by closing this tab." },
+        ]);
+    };
+
     return (
         <div className="tutor">
             <Header topic={question.headerTopic} problem={`Problem ${questionId}`} />
+            {saving && <div className="saving-message">💾 Saving your conversation... Please wait.</div>}
             <div className="topPart">
                 <Problem statement={question.problemStatement}
                     input={question.input}
@@ -245,6 +303,7 @@ const Tutor = () => {
                     messages={botMessages}
                     isTyping={isTyping}
                     onSendMessage={sendMessage}
+                    onDone={handleDoneClick}
                 />
                 <Output output={output} loading={loading} />
             </div>

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "../assets/css/tutor.css"; // Ensure this CSS file exists
 
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
+
 const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setIsTyping }) => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [isCorrect, setIsCorrect] = useState(null);
@@ -31,7 +33,7 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
 
             if (correct) {
                 console.log("✅ Answer is correct on frontend");
-                const successMessage = "🎉 Congratulations! You got the right answer! You can move on.";
+                const successMessage = "🎉 Congratulations! You got the right answer! Press Done to store your progress";
                 setFeedback(successMessage);
                 setConversationHistory(""); // Reset conversation on correct answer
 
@@ -52,7 +54,7 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
 
                     console.log("Fetching feedback from bot for incorrect answer...");
 
-                    const response = await fetch("http://localhost:5001/api/mcq-feedback", {
+                    const response = await fetch(`${BASE_URL}/api/mcq-feedback`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { tests } from "../constantTests";
 import "../assets/css/test.css";
-
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 const TestPage = () => {
     const { moduleId } = useParams();
     const searchParams = new URLSearchParams(window.location.search);
@@ -15,6 +15,7 @@ const TestPage = () => {
     const test = tests.find((t) => t.id === `${testType}-${moduleId}`);
 
     const [answers, setAnswers] = useState({});
+    const [reflectionResponse, setReflectionResponse] = useState("");
 
     if (!test) {
         return <h1 className="error-text">Test not found</h1>;
@@ -38,7 +39,8 @@ const TestPage = () => {
 
             console.log("correct answers - ", correctAnswers)
             console.log("Users answer - ", answers)
-            const response = await fetch("http://localhost:5001/api/submit-test", {
+            console.log("Reflection response - ", reflectionResponse);
+            const response = await fetch(`${BASE_URL}/api/submit-test`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -48,7 +50,8 @@ const TestPage = () => {
                     testType,
                     title: moduleId,
                     answers,
-                    correctAnswers
+                    correctAnswers,
+                    reflectionResponse: testType === "post-test" ? reflectionResponse : null // Only send for post-test
                 })
             });
 
@@ -58,7 +61,14 @@ const TestPage = () => {
 
             const data = await response.json();
             console.log("Result obtained - ", data)
-            alert("Test submitted successfully!");
+            console.log("The score is - ", data.score)
+
+            if (testType === "post-test") {
+                alert(`Test submitted successfully! You got a score of ${data.score}`);
+            } else {
+                alert("Test submitted successfully!");
+            }
+
         } catch (error) {
             console.error("Error submitting test:", error);
             alert("Failed to submit test.");
@@ -91,6 +101,19 @@ const TestPage = () => {
                     </div>
                 </div>
             ))}
+
+            {/* Reflection question (only for post-test) */}
+            {testType === "post-test" && (
+                <div className="reflection-container">
+                    <label className="reflection-label">Reflection Question:</label>
+                    <textarea
+                        className="reflection-textarea"
+                        placeholder="What did you learn from this test?"
+                        value={reflectionResponse}
+                        onChange={(e) => setReflectionResponse(e.target.value)}
+                    />
+                </div>
+            )}
 
             <button className="submit-button" onClick={handleSubmit}>Submit</button>
         </div>
