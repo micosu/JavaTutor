@@ -71,7 +71,7 @@ const modulesData = [
     // }
 ];
 
-const Dashboard = () => {
+const DashboardControl = () => {
     const [activeModule, setActiveModule] = useState(null);
     const [studentId, setStudentId] = useState("");
     const [hasConsent, setHasConsent] = useState(false); // Store consent status
@@ -330,6 +330,12 @@ const Dashboard = () => {
                     </div>
                 )}
 
+                {successMessageTest && (
+                    <div className={`success-message ${showMessageTest ? "visible" : "fade-out"}`}>
+                        {successMessageTest}
+                    </div>
+                )}
+
                 <Name name={studentName} />
                 <IntroBlock title="Java Tutor" content="The Java Tutor provides feedback by indicating whether your answer is correct or incorrect. If you are stuck, you can check the correct answer, but no additional hints or explanations are provided." />
                 <div className="modulesTitle">
@@ -352,7 +358,8 @@ const Dashboard = () => {
                             {/* Show questions only when a module is clicked */}
                             {activeModule === index && module.type === "module" && hasConsent && (
                                 <div className="questions">
-                                    <TestButton studentId={studentId} moduleId={index} type="pre-test" onPreTestComplete={handlePreTestCompletion} />
+                                    <TestButton studentId={studentId} moduleId={index} type="pre-test" onPreTestComplete={handlePreTestCompletion} setSuccessMessageTest={setSuccessMessageTest}
+                                        setShowMessageTest={setShowMessageTest} />
 
                                     {module.questions.map((question, qIndex) => (
                                         <QuestionButton
@@ -370,7 +377,9 @@ const Dashboard = () => {
                                     <TestButton studentId={studentId} moduleId={index} type="post-test" isDisabled={
                                         !preTestCompleted[index] ||
                                         !(Array.isArray(completedQuestions[index]) && completedQuestions[index].includes("ALL_DONE"))
-                                    } />
+
+                                    } setSuccessMessageTest={setSuccessMessageTest}
+                                        setShowMessageTest={setShowMessageTest} />
                                 </div>
                             )}
                         </div>
@@ -381,4 +390,4 @@ const Dashboard = () => {
     )
 }
 
-export default Dashboard
+export default DashboardControl

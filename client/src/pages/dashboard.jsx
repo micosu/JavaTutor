@@ -93,6 +93,9 @@ const Dashboard = () => {
         const consentMsg = sessionStorage.getItem("consentSuccessMessage");
         const testMsg = localStorage.getItem("testSuccessMessage");
 
+        console.log("Message from localStorage after test closed:", testMsg);
+
+
         console.log("USe effect", consentMsg, testMsg);
 
         if (consentMsg) {
