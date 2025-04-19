@@ -51,7 +51,6 @@ const modulesData = [
             { text: "Question 10", questionType: "mcq" },
             { text: "Question 11", questionType: "mcq" },
             { text: "Question 12", questionType: "mcq" },
-            { text: "Question 13", questionType: "tutor" },
         ]
     },
     {
@@ -80,6 +79,8 @@ const Dashboard = () => {
     const location = useLocation();
     const [successMessage, setSuccessMessage] = useState("");
     const [showMessage, setShowMessage] = useState(true);
+    const [successMessageTest, setSuccessMessageTest] = useState("");
+    const [showMessageTest, setShowMessageTest] = useState(false);
 
     const timer = setTimeout(() => {
         setSuccessMessage((prev) => (prev ? "hidden" : ""));
@@ -87,25 +88,29 @@ const Dashboard = () => {
     }, 5000);
 
     useEffect(() => {
-        // Scroll to the top when the page loads
-        window.scrollTo(0, 0);
+        window.scrollTo(0, 0); // Optional, if you want to scroll to top on load
 
-        // Retrieve the success message from sessionStorage
-        const message = sessionStorage.getItem("consentSuccessMessage");
+        const consentMsg = sessionStorage.getItem("consentSuccessMessage");
+        const testMsg = localStorage.getItem("testSuccessMessage");
 
-        if (message) {
-            setSuccessMessage(message);
-            sessionStorage.removeItem("consentSuccessMessage"); // Remove from session storage
+        console.log("USe effect", consentMsg, testMsg);
 
-            // Delay fade-out after 4 seconds
-            setTimeout(() => {
-                setShowMessage(false);
-            }, 4000);
+        if (consentMsg) {
+            setSuccessMessage(consentMsg);
+            setShowMessage(true);
+            sessionStorage.removeItem("consentSuccessMessage");
 
-            // Fully remove message after 5 seconds
-            setTimeout(() => {
-                setSuccessMessage("");
-            }, 5000);
+            setTimeout(() => setShowMessage(false), 4000);
+            setTimeout(() => setSuccessMessage(""), 5000);
+        }
+
+        if (testMsg) {
+            setSuccessMessageTest(testMsg);
+            setShowMessageTest(true);
+            localStorage.removeItem("testSuccessMessage");
+
+            setTimeout(() => setShowMessageTest(false), 4000);
+            setTimeout(() => setSuccessMessageTest(""), 5000);
         }
     }, []);
 
@@ -324,6 +329,12 @@ const Dashboard = () => {
                         {successMessage}
                     </div>
                 )}
+                {successMessageTest && (
+                    <div className={`success-message ${showMessageTest ? "visible" : "fade-out"}`}>
+                        {successMessageTest}
+                    </div>
+                )}
+
 
                 <Name name={studentName} />
                 <IntroBlock title="Java Tutor" content="The Java Tutor can give you adaptive feedback and run your code in the environment. You can also chat with the tutor to ask for more hints and feedback!" />
@@ -347,7 +358,8 @@ const Dashboard = () => {
                             {/* Show questions only when a module is clicked */}
                             {activeModule === index && module.type === "module" && hasConsent && (
                                 <div className="questions">
-                                    <TestButton studentId={studentId} moduleId={index} type="pre-test" onPreTestComplete={handlePreTestCompletion} />
+                                    <TestButton studentId={studentId} moduleId={index} type="pre-test" onPreTestComplete={handlePreTestCompletion} setSuccessMessageTest={setSuccessMessageTest}
+                                        setShowMessageTest={setShowMessageTest} />
 
                                     {module.questions.map((question, qIndex) => (
                                         <QuestionButton
@@ -366,7 +378,8 @@ const Dashboard = () => {
                                     <TestButton studentId={studentId} moduleId={index} type="post-test" isDisabled={
                                         !preTestCompleted[index] ||
                                         !(Array.isArray(completedQuestions[index]) && completedQuestions[index].includes("ALL_DONE"))
-                                    } />
+                                    } setSuccessMessageTest={setSuccessMessageTest}
+                                        setShowMessageTest={setShowMessageTest} />
                                 </div>
                             )}
                         </div>

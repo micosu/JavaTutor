@@ -7,6 +7,7 @@ const TestPage = () => {
     const { moduleId } = useParams();
     const searchParams = new URLSearchParams(window.location.search);
     const studentId = searchParams.get("studentId");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Determine if it's a pre-test or post-test
     const testType = window.location.pathname.includes("pre-test") ? "pre-test" : "post-test";
@@ -29,6 +30,7 @@ const TestPage = () => {
     };
 
     const handleSubmit = async () => {
+        setIsSubmitting(true);
         try {
             const correctAnswers = test.questions.reduce((acc, q) => {
                 acc[q.id] = q.options.indexOf(q.answer); // ✅ Stores correct answer as index
@@ -63,20 +65,32 @@ const TestPage = () => {
             console.log("Result obtained - ", data)
             console.log("The score is - ", data.score)
 
-            if (testType === "post-test") {
-                alert(`Test submitted successfully! You got a score of ${data.score}`);
-            } else {
-                alert("Test submitted successfully!");
-            }
+            const message = testType === "post-test"
+                ? `✅ Post-test submitted! You scored ${data.score}.`
+                : "✅ Pre-test submitted successfully!";
+            sessionStorage.setItem("testSuccessMessage", message);
+            localStorage.setItem("testSuccessMessage", message);
+            console.log("in messages", message)
+            console.log("testSuccessMessage set:", sessionStorage.getItem("testSuccessMessage"));
+            console.log("Setting testSuccessMessage...");
+            setTimeout(() => {
+                window.close();
+            }, 3000);
 
         } catch (error) {
             console.error("Error submitting test:", error);
             alert("Failed to submit test.");
+            setIsSubmitting(false);
         }
     };
 
 
-    return (
+    return isSubmitting ? (
+        <div className="loader-overlay" >
+            <div className="spinnerTest"></div>
+            <p>Submitting your test, please wait...</p>
+        </div >
+    ) : (
         <div className="test-container">
             <h1 className="test-title">{test.title}</h1>
             {/* <p className="student-id">Student ID: {studentId}</p> */}
@@ -118,6 +132,7 @@ const TestPage = () => {
             <button className="submit-button" onClick={handleSubmit}>Submit</button>
         </div>
     );
-};
+}
+
 
 export default TestPage;

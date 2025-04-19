@@ -79,6 +79,8 @@ const Dashboard = () => {
     const location = useLocation();
     const [successMessage, setSuccessMessage] = useState("");
     const [showMessage, setShowMessage] = useState(true);
+    const [successMessageTest, setSuccessMessageTest] = useState("");
+    const [showMessageTest, setShowMessageTest] = useState(false);
 
     const timer = setTimeout(() => {
         setSuccessMessage((prev) => (prev ? "hidden" : ""));
@@ -89,22 +91,28 @@ const Dashboard = () => {
         // Scroll to the top when the page loads
         window.scrollTo(0, 0);
 
+        const consentMsg = sessionStorage.getItem("consentSuccessMessage");
+        const testMsg = localStorage.getItem("testSuccessMessage");
+        console.log("USe effect", consentMsg, testMsg);
         // Retrieve the success message from sessionStorage
         const message = sessionStorage.getItem("consentSuccessMessage");
 
-        if (message) {
-            setSuccessMessage(message);
-            sessionStorage.removeItem("consentSuccessMessage"); // Remove from session storage
+        if (consentMsg) {
+            setSuccessMessage(consentMsg);
+            setShowMessage(true);
+            sessionStorage.removeItem("consentSuccessMessage");
 
-            // Delay fade-out after 4 seconds
-            setTimeout(() => {
-                setShowMessage(false);
-            }, 4000);
+            setTimeout(() => setShowMessage(false), 4000);
+            setTimeout(() => setSuccessMessage(""), 5000);
+        }
 
-            // Fully remove message after 5 seconds
-            setTimeout(() => {
-                setSuccessMessage("");
-            }, 5000);
+        if (testMsg) {
+            setSuccessMessageTest(testMsg);
+            setShowMessageTest(true);
+            localStorage.removeItem("testSuccessMessage");
+
+            setTimeout(() => setShowMessageTest(false), 4000);
+            setTimeout(() => setSuccessMessageTest(""), 5000);
         }
     }, []);
 

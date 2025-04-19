@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
-const TestButton = ({ studentId, moduleId, type, isDisabled, onPreTestComplete }) => {
+const TestButton = ({ studentId, moduleId, type, isDisabled, onPreTestComplete, setSuccessMessageTest,
+    setShowMessageTest }) => {
     const navigate = useNavigate();
     console.log("isDisabled", isDisabled);
     const [checked, setChecked] = useState(false);
@@ -56,12 +57,28 @@ const TestButton = ({ studentId, moduleId, type, isDisabled, onPreTestComplete }
 
 
         const testWindow = window.open(targetURL, "_blank");
+        // navigate(`/pre-test/${moduleId}?studentId=${studentId}`);
 
         // ✅ Check for test completion when the window is closed
         const checkTestCompletion = setInterval(() => {
             if (testWindow?.closed) {
                 clearInterval(checkTestCompletion);
                 fetchProgress(); // ✅ Refresh checkbox state after test completion
+
+                const message = localStorage.getItem("testSuccessMessage");
+                if (message) {
+                    if (setSuccessMessageTest && setShowMessageTest) {
+                        setSuccessMessageTest(message);
+                        setShowMessageTest(true);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+
+                        setTimeout(() => setShowMessageTest(false), 4000);
+                        setTimeout(() => setSuccessMessageTest(""), 5000);
+                    }
+
+                    sessionStorage.removeItem("testSuccessMessage");
+                    localStorage.removeItem("testSuccessMessage");
+                }
             }
         }, 2000);
     };
