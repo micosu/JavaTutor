@@ -48,13 +48,14 @@ const MCQPage = () => {
     }, [question, navigate]);
 
     const sendMessage = async (message) => {
-        // Append user message to chat
-        setBotMessages((prevMessages) => [...prevMessages, { sender: "user", text: message }]);
-
-        // Simulate bot typing
         setIsTyping(true);
+        // Append user message to chat
+        const updatedMessages = [...botMessages, { sender: "user", text: message }];
+        setBotMessages(updatedMessages);
+
 
         try {
+            console.log("Payload being sent to /api/chat:", updatedMessages);
             // Send conversation history to ChatGPT
             const response = await fetch(`${BASE_URL}/api/chat`, {
                 method: "POST",
@@ -62,7 +63,7 @@ const MCQPage = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    messages: botMessages.concat({ sender: "user", text: message }).map((msg) => ({
+                    messages: updatedMessages.map((msg) => ({
                         role: msg.sender === "user" ? "user" : "assistant",
                         content: msg.text,
                     })),
@@ -81,6 +82,7 @@ const MCQPage = () => {
                 { sender: "bot", text: data.response },
             ]);
         } catch (error) {
+            console.error("❌ Error in Chat API:", error);
             setBotMessages((prevMessages) => [
                 ...prevMessages,
                 { sender: "bot", text: "Error: Could not fetch a response. Please try again." },

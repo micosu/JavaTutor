@@ -22,7 +22,7 @@ const Bot = ({ messages, isTyping, onSendMessage, onDone }) => {
     };
 
     const handleKeyDown = (e) => {
-        if (e.key === "Enter") {
+        if (e.key === "Enter" && !isTyping) {
             handleSend();
         }
     };
@@ -60,7 +60,7 @@ const Bot = ({ messages, isTyping, onSendMessage, onDone }) => {
                         onChange={(e) => setUserInput(e.target.value)}
                         onKeyDown={handleKeyDown}
                     />
-                    <button className="send-button" onClick={handleSend}>
+                    <button className="send-button" onClick={handleSend} disabled={isTyping || userInput.trim() === ""}>
                         Send
                     </button>
                 </div>

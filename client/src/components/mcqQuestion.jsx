@@ -104,6 +104,13 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
                                 : "incorrect"
                             : ""
                             }`}
+
+                        onClick={() => {
+                            setSelectedOption(option);
+                            setIsCorrect(null);
+                            setFeedback("");
+                        }}
+                        style={{ cursor: "pointer" }}
                     >
                         <input
                             type="radio"
@@ -111,8 +118,10 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
                             id={`option-${index}`}
                             className="radioButton"
                             value={option}
-                            onChange={handleOptionChange}
+                            // onChange={handleOptionChange}
+                            onChange={() => { }}
                             checked={selectedOption === option}
+                            style={{ pointerEvents: "none" }}
                         />
                         <label htmlFor={`option-${index}`} className="optionLabel">
                             {option}

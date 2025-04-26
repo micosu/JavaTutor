@@ -84,15 +84,16 @@ const TestButton = ({ studentId, moduleId, type, isDisabled, onPreTestComplete, 
     };
     return (
 
-        <div className={`questionButton ${isDisabled ? "disabled" : ""}`}>
+        <div className={`questionButton ${isDisabled ? "disabled" : ""}`} onClick={!isDisabled ? handleClick : undefined} style={{ cursor: isDisabled ? "not-allowed" : "pointer" }}>
             <input
                 type="checkbox"
                 checked={checked}
                 // onChange={handleCheckboxChange}
                 disabled //
                 className="questionCheckbox"
+                onClick={(e) => e.stopPropagation()}
             />
-            <h2 className="poppins-medium" onClick={!isDisabled ? handleClick : undefined}>
+            <h2 className="poppins-medium" >
                 {type === "pre-test" ? "Pre Test" : "Post Test"}
             </h2>
         </div>

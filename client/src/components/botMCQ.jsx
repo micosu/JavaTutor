@@ -19,7 +19,7 @@ const BotMCQ = ({ messages, isTyping, onSendMessage, onDone }) => {
     };
 
     const handleSend = () => {
-        if (userInput.trim()) {
+        if (userInput.trim() && !isTyping) {
             onSendMessage(userInput); // Pass the user message to the parent component
             setUserInput(""); // Clear the input box
         }
@@ -59,7 +59,7 @@ const BotMCQ = ({ messages, isTyping, onSendMessage, onDone }) => {
                     onChange={(e) => setUserInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                 />
-                <button className="send-button" onClick={handleSend}>
+                <button className="send-button" onClick={handleSend} disabled={isTyping || userInput.trim() === ""}>
                     Send
                 </button>
             </div>

@@ -322,6 +322,12 @@
     background-color: #0056b3;
 }
 
+.send-button:disabled {
+    background-color: #ccc;
+    color: #888;
+    cursor: not-allowed;
+}
+
 .typing-loader {
     display: flex;
     align-items: center;

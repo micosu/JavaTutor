@@ -105,14 +105,15 @@ const QuestionButton = ({ studentId, moduleId, questionId, question, type, isDis
     };
 
     return (
-        <div className={`questionButton ${isDisabled ? "disabled" : ""}`}>
+        <div className={`questionButton ${isDisabled ? "disabled" : ""}`} onClick={!isDisabled ? handleClick : undefined} style={{ cursor: isDisabled ? "not-allowed" : "pointer" }}>
             <input
                 type="checkbox"
                 checked={checked}
                 disabled
                 className="questionCheckbox"
+                onClick={(e) => e.stopPropagation()}
             />
-            <h2 className="poppins-medium" onClick={!isDisabled ? handleClick : undefined}>
+            <h2 className="poppins-medium">
                 {question.text}
             </h2>
         </div>
