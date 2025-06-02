@@ -8,6 +8,13 @@ const TestPage = () => {
     const searchParams = new URLSearchParams(window.location.search);
     const studentId = searchParams.get("studentId");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const moduleNames = {
+        "1": "Control Structures",
+        "2": "Loops",
+        "3": "Methods"
+    };
+
+    const moduleName = moduleNames[moduleId] || "this module"; // fallback if not found
 
     // Determine if it's a pre-test or post-test
     const testType = window.location.pathname.includes("pre-test") ? "pre-test" : "post-test";
@@ -122,7 +129,11 @@ const TestPage = () => {
                     <label className="reflection-label">Reflection Question:</label>
                     <textarea
                         className="reflection-textarea"
-                        placeholder="What did you learn from this test?"
+                        placeholder={
+                            moduleNames[moduleId]
+                                ? `What did you learn from the module '${moduleNames[moduleId]}'?`
+                                : `What did you learn from this module?`
+                        }
                         value={reflectionResponse}
                         onChange={(e) => setReflectionResponse(e.target.value)}
                     />

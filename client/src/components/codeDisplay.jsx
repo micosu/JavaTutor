@@ -78,18 +78,20 @@ const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange 
             <div
                 className="courier-prime-regular codeLines"
                 key={lineIndex}
-                style={{ whiteSpace: "pre-wrap" }}
+                style={{ whiteSpace: "pre-wrap", userSelect: "none", }}
+                onContextMenu={(e) => e.preventDefault()}
             >
                 {parts.map((part, partIndex) => {
                     const key = `${lineIndex}-${partIndex}`;
                     return (
                         <React.Fragment key={partIndex}>
-                            <span style={{ fontSize: "18px", color: isComment ? "green" : "white" }}>{part}</span>
+                            <span style={{ fontSize: "18px", color: isComment ? "green" : "white" }} onCopy={(e) => e.preventDefault()} onSelect={(e) => e.preventDefault()}>{part}</span>
                             {partIndex < parts.length - 1 && (
                                 <input
                                     type="text"
                                     value={inputs[key] || ""}
                                     onChange={(e) => handleChange(key, e.target.value)}
+                                    onSelect={(e) => e.preventDefault()}
                                     style={{
                                         display: "inline-block",
                                         width: "50px",
@@ -99,6 +101,7 @@ const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange 
                                         border: inputStyles[key] || "1px solid #ccc",
                                         borderRadius: "4px",
                                     }}
+                                    onCopy={(e) => e.preventDefault()}
                                 />
                             )}
                         </React.Fragment>

@@ -88,6 +88,12 @@
     margin: 50px 0px 50px 0px;
 }
 
+.statement,
+.input,
+.outputProb {
+    user-select: none;
+}
+
 .bot {
     background-color: #101827;
     width: 50vw;
@@ -421,6 +427,7 @@
     padding: 5px 30px;
     width: 50vw;
     margin-top: 20px;
+    user-select: none;
 
 }
 

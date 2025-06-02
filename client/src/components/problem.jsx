@@ -3,7 +3,8 @@ import '../assets/css/tutor.css';
 
 const Problem = ({ statement, input, output }) => {
     return (
-        <div className="problem">
+        <div className="problem" onContextMenu={(e) => e.preventDefault()}>
+
             <p className="problemTitle inter-bold">Problem</p>
             <div className="problemDescription inter-regular">
                 <pre className="statement">{statement}</pre>

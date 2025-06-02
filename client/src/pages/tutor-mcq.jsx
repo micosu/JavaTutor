@@ -47,50 +47,113 @@ const MCQPage = () => {
         }
     }, [question, navigate]);
 
+    // const sendMessage = async (message) => {
+    //     setIsTyping(true);
+    //     // Append user message to chat
+    //     const updatedMessages = [...botMessages, { sender: "user", text: message }];
+    //     setBotMessages(updatedMessages);
+
+
+    //     try {
+    //         console.log("Payload being sent to /api/chat:", updatedMessages);
+    //         // Send conversation history to ChatGPT
+    //         const response = await fetch(`${BASE_URL}/api/chat`, {
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify({
+    //                 messages: updatedMessages.map((msg) => ({
+    //                     role: msg.sender === "user" ? "user" : "assistant",
+    //                     content: msg.text,
+    //                 })),
+    //             }),
+    //         });
+
+    //         const data = await response.json();
+
+    //         if (data.error) {
+    //             throw new Error(data.error);
+    //         }
+
+    //         // Append ChatGPT response to chat
+    //         setBotMessages((prevMessages) => [
+    //             ...prevMessages,
+    //             { sender: "bot", text: data.response },
+    //         ]);
+    //     } catch (error) {
+    //         console.error("❌ Error in Chat API:", error);
+    //         setBotMessages((prevMessages) => [
+    //             ...prevMessages,
+    //             { sender: "bot", text: "Error: Could not fetch a response. Please try again." },
+    //         ]);
+    //     } finally {
+    //         setIsTyping(false);
+    //     }
+    // };
+
     const sendMessage = async (message) => {
         setIsTyping(true);
-        // Append user message to chat
         const updatedMessages = [...botMessages, { sender: "user", text: message }];
         setBotMessages(updatedMessages);
 
+        const payload = {
+            messages: updatedMessages.map((msg) => ({
+                role: msg.sender === "user" ? "user" : "assistant",
+                content: msg.text,
+            })),
+        };
 
-        try {
-            console.log("Payload being sent to /api/chat:", updatedMessages);
-            // Send conversation history to ChatGPT
-            const response = await fetch(`${BASE_URL}/api/chat`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    messages: updatedMessages.map((msg) => ({
-                        role: msg.sender === "user" ? "user" : "assistant",
-                        content: msg.text,
-                    })),
-                }),
-            });
+        const maxRetries = 3;
 
-            const data = await response.json();
+        const fetchWithRetry = async (retries, delay) => {
+            try {
+                console.log("Payload being sent to /api/chat:", updatedMessages);
+                const response = await fetch(`${BASE_URL}/api/chat`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                });
 
-            if (data.error) {
-                throw new Error(data.error);
+                if (!response.ok) {
+                    throw new Error(`Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Success: Add bot response
+                setBotMessages((prevMessages) => [
+                    ...prevMessages,
+                    { sender: "bot", text: data.response },
+                ]);
+            } catch (error) {
+                console.error(`Attempt failed (${maxRetries - retries + 1}):`, error);
+                if (retries > 1) {
+                    await new Promise((res) => setTimeout(res, delay));
+                    return fetchWithRetry(retries - 1, delay * 2); // exponential backoff
+                } else {
+                    setBotMessages((prevMessages) => [
+                        ...prevMessages,
+                        {
+                            sender: "bot",
+                            text: "Error: Could not fetch a response. Please try again.",
+                        },
+                    ]);
+                }
+            } finally {
+                setIsTyping(false);
             }
+        };
 
-            // Append ChatGPT response to chat
-            setBotMessages((prevMessages) => [
-                ...prevMessages,
-                { sender: "bot", text: data.response },
-            ]);
-        } catch (error) {
-            console.error("❌ Error in Chat API:", error);
-            setBotMessages((prevMessages) => [
-                ...prevMessages,
-                { sender: "bot", text: "Error: Could not fetch a response. Please try again." },
-            ]);
-        } finally {
-            setIsTyping(false);
-        }
+        await fetchWithRetry(maxRetries, 1000); // start with 1s delay
     };
+
 
     const handleMCQFeedback = async (feedbackMessage, sender) => {
         setBotMessages((prevMessages) => [...prevMessages, { sender, text: feedbackMessage }]);
