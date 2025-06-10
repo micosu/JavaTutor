@@ -6,12 +6,13 @@ import Bot from "./bot";
 
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
+
 const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemStatement, initialCorrectAnswers }) => {
     const [completedCode, setCompletedCode] = useState("");
     const [userInputs, setUserInputs] = useState({}); // User answers from CodeDisplay
     // const [isTyping, setIsTyping] = useState(false); // State for loader
     const [conversationHistory, setConversationHistory] = useState("")
-
+    const [hintCounterFrontend, setHintCounter] = useState(0)
 
     const handleCodeChange = (fullCode) => {
         setCompletedCode(fullCode);
@@ -50,15 +51,17 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
         } else {
 
             // Call ChatGPT API for debugging suggestions
+            console.log("Hint Counter in frontend is", hintCounterFrontend)
             setIsTyping(true);
-            await callChatGPTAPI(userAnswers);
+            await callChatGPTAPI(userAnswers, hintCounterFrontend);
+            setHintCounter(hintCounterFrontend + 1)
             setIsTyping(false);
         }
 
 
     };
 
-    const callChatGPTAPI = async (userAnswers) => {
+    const callChatGPTAPI = async (userAnswers, hintCounterFrontend) => {
         try {
             const response = await fetch(`${BASE_URL}/api/debug`, {
                 method: "POST",
@@ -71,6 +74,7 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
                     userAnswers,
                     correctAnswers,
                     conversationHistory,
+                    hintCounterFrontend
                 }), // Pass the user's answers to the backend
             });
 
