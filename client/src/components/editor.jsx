@@ -24,11 +24,19 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
     const correctAnswers = initialCorrectAnswers;
     console.log("Correct Answers", correctAnswers);
     const handleRun = async () => {
+        // To preserve user answer order
+        console.log("User Inputs---------", userInputs)
+        const orderedKeys = Object.keys(userInputs).sort((a, b) => {
+            const [aLine, aPart] = a.split("-").map(Number);
+            const [bLine, bPart] = b.split("-").map(Number);
+            return aLine === bLine ? aPart - bPart : aLine - bLine;
+        });
         // const userAnswers = Object.values(userInputs);
-        const rawUserAnswers = Object.values(userInputs);
-        const userAnswers = rawUserAnswers.map((answer) =>
-            typeof answer === "string" ? answer.trim() : answer
-        );
+        // const rawUserAnswers = Object.values(userInputs);
+        const userAnswers = orderedKeys.map((key) => {
+            const answer = userInputs[key];
+            return typeof answer === "string" ? answer.trim() : answer;
+        });
         // const userAnswers = Object.values(userInputs).map((answer) =>
         //     typeof answer === "string" ? answer.trim() : answer
         // );
