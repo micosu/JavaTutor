@@ -7,13 +7,16 @@ import Bot from "./bot";
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
 
-const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemStatement, initialCorrectAnswers }) => {
+const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemStatement, initialCorrectAnswers, moduleId, questionId, studentId }) => {
     const [completedCode, setCompletedCode] = useState("");
     const [userInputs, setUserInputs] = useState({}); // User answers from CodeDisplay
     // const [isTyping, setIsTyping] = useState(false); // State for loader
     const [conversationHistory, setConversationHistory] = useState("")
     const [hintCounterFrontend, setHintCounter] = useState(0)
-
+    const sessionId = localStorage.getItem("sessionId");
+    const studentGroup = sessionStorage.getItem("studentGroup");
+    console.log("studentGroup", studentGroup)
+    console.log("Session ID from Editor:", sessionId);
     const handleCodeChange = (fullCode) => {
         setCompletedCode(fullCode);
     };
@@ -50,6 +53,25 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
             userAnswers.every((answer, index) => answer === correctAnswers[index]);
 
         console.log("Is correct is", isCorrect, correctAnswers, userAnswers)
+
+        await fetch(`${BASE_URL}/log-attempt`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                sessionId,
+                eventType: "attempt",
+                timestamp: new Date().toISOString(),
+                userAnswers,
+                correctAnswers,
+                isCorrect,
+                moduleId,    // pass this if available in props/context
+                questionId,  // pass this if available in props/context
+                studentId,
+                studentGroup: studentGroup
+            }),
+        });
         if (onRunCode) {
             onRunCode(completedCode, isCorrect); // Pass the correctness flag
         }
@@ -98,12 +120,43 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
                 ...prevMessages,
                 { sender: "bot", text: `Debugging Suggestion : ${data.suggestion}` },
             ]);
+            const newBotMessage = `Debugging Suggestion : ${data.suggestion}`;
+
+            await fetch(`${BASE_URL}/log-interaction`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    sessionId,
+                    studentId,
+                    moduleId,      // make sure you pass these as props/context
+                    questionId,
+                    eventType: "bot-message",
+                    message: newBotMessage,
+                    timestamp: new Date().toISOString(),
+                    studentGroup: studentGroup
+                }),
+            });
+
         } catch (error) {
             setBotMessages((prevMessages) => [
                 ...prevMessages,
                 { sender: "bot", text: `Error fetching debugging details` },
             ]);
             console.log("Error", error)
+            await fetch(`${BASE_URL}/log-interaction`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    sessionId,
+                    studentId,
+                    moduleId,      // make sure you pass these as props/context
+                    questionId,
+                    eventType: "bot-message",
+                    message: `Error fetching debugging details`,
+                    timestamp: new Date().toISOString(),
+                    studentGroup: studentGroup
+                }),
+            });
         }
     };
 

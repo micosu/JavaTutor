@@ -268,6 +268,27 @@ const Tutor = () => {
 
     const sendMessage = async (message) => {
         setIsTyping(true);
+        const sessionId = localStorage.getItem("sessionId");
+        console.log("Session ID from Tutor:", sessionId);
+        const timestamp = new Date().toISOString();
+        const studentGroup = sessionStorage.getItem("studentGroup");
+
+        await fetch(`${BASE_URL}/log-interaction`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                sessionId,
+                studentId,
+                moduleId,     // make sure this is accessible via props/context
+                questionId,
+                eventType: "user-message",
+                message,
+                timestamp,
+                studentGroup
+            }),
+        });
         const checkQuestion = async (message) => {
             try {
                 console.log("Checking student question:", message);
@@ -346,6 +367,23 @@ const Tutor = () => {
                         ...prevMessages,
                         { sender: "bot", text: data.response },
                     ]);
+
+                    await fetch(`${BASE_URL}/log-interaction`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            sessionId,
+                            studentId,
+                            moduleId,
+                            questionId,
+                            eventType: "bot-message",
+                            message: data.response,
+                            timestamp: new Date().toISOString(),
+                            studentGroup
+                        }),
+                    });
                 } catch (error) {
                     console.error(`Attempt failed (${maxRetries - retries + 1}):`, error);
                     if (retries > 1) {
@@ -359,6 +397,22 @@ const Tutor = () => {
                                 text: "Error: Could not fetch a response. Please try again.",
                             },
                         ]);
+                        await fetch(`${BASE_URL}/log-interaction`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                sessionId,
+                                studentId,
+                                moduleId,
+                                questionId,
+                                eventType: "bot-message",
+                                message: "Error: Could not fetch a response. Please try again.",
+                                timestamp: new Date().toISOString(),
+                                studentGroup
+                            }),
+                        });
                     }
                 } finally {
                     setIsTyping(false);
@@ -372,6 +426,22 @@ const Tutor = () => {
                 ...prevMessages,
                 { sender: "bot", text: "Sorry we detected that you are requesting the answer directly. Please try again." },
             ]);
+            await fetch(`${BASE_URL}/log-interaction`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    sessionId,
+                    studentId,
+                    moduleId,
+                    questionId,
+                    eventType: "bot-message",
+                    message: "Sorry we detected that you are requesting the answer directly. Please try again.",
+                    timestamp: new Date().toISOString(),
+                    studentGroup
+                }),
+            });
             setIsTyping(false);
         }
     };
@@ -407,6 +477,9 @@ const Tutor = () => {
                     initialCode={question.code}
                     problemStatement={question.problemStatement}
                     initialCorrectAnswers={question.correctAnswers}
+                    moduleId={moduleId}
+                    questionId={questionId}
+                    studentId={studentId}
                 />
             </div>
             <div className="bottomPart">

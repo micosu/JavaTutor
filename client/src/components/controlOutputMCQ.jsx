@@ -30,6 +30,21 @@ const ControlOutputMCQ = ({ CorrectAnswers, studentId, moduleId, questionId, fee
 
             const data = await response.json();
             console.log("Reveal answer recorded:", data);
+            const sessionId = localStorage.getItem("sessionId");
+            const timestamp = new Date().toISOString();
+
+            await fetch(`${BASE_URL}/log-interaction`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    sessionId,
+                    studentId,
+                    moduleId,
+                    questionId,
+                    eventType: "reveal-answer",
+                    timestamp,
+                }),
+            });
         } catch (error) {
             console.error("Error sending reveal answer data:", error);
         }

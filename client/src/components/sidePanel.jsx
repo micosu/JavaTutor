@@ -8,6 +8,7 @@ const SidePanel = () => {
     const navigate = useNavigate();
     const handleLogout = () => {
         sessionStorage.removeItem("studentId"); // ✅ Remove studentId from sessionStorage
+        localStorage.removeItem("sessionId");
         navigate("/"); // ✅ Redirect to login page
     };
     return (

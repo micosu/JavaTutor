@@ -85,7 +85,7 @@ const TutorMCQControl = () => {
                 <div className="leftPart">
                     <ProblemMCQ statement={question.problemStatement} />
                     <CodeDisplayMCQ code={question.code} />
-                    <MCQOptionsControl options={question.options} correctAnswers={question.correctAnswer} question={question} onReceiveFeedback={handleMCQFeedback} setIsTyping={setIsTyping} />
+                    <MCQOptionsControl options={question.options} correctAnswers={question.correctAnswer} question={question} onReceiveFeedback={handleMCQFeedback} setIsTyping={setIsTyping} studentId={studentId} moduleId={moduleId} questionId={questionId} />
                 </div>
                 <div className="rightPart">
                     <ControlOutputMCQ CorrectAnswers={question.correctAnswer} studentId={studentId} moduleId={moduleId} questionId={questionId} feedbackMessage={feedbackMessage} />

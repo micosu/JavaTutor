@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 
 const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange }) => {
+    const sessionId = localStorage.getItem("sessionId");
+    console.log("Session ID from code display:", sessionId);
     const [inputs, setInputs] = useState({}); // To track user input for blanks
     const [inputStyles, setInputStyles] = useState({}); // To track border styles for inputs
 

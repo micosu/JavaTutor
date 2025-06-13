@@ -161,6 +161,9 @@ const TutorControl = () => {
                     initialCode={question.code}
                     problemStatement={question.problemStatement}
                     initialCorrectAnswers={question.correctAnswers}
+                    moduleId={moduleId}
+                    questionId={questionId}
+                    studentId={studentId}
                 />
             </div>
             <div className="bottomPart">

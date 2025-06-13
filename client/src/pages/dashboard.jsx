@@ -81,7 +81,8 @@ const Dashboard = () => {
     const [showMessage, setShowMessage] = useState(true);
     const [successMessageTest, setSuccessMessageTest] = useState("");
     const [showMessageTest, setShowMessageTest] = useState(false);
-
+    const sessionId = localStorage.getItem("sessionId");
+    console.log("Session ID from dashboard:", sessionId);
     const timer = setTimeout(() => {
         setSuccessMessage((prev) => (prev ? "hidden" : ""));
         setTimeout(() => setSuccessMessage(""), 1000); // Fully remove after fade out

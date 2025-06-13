@@ -3,7 +3,7 @@ import "../assets/css/tutor.css"; // Ensure this CSS file exists
 
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
-const MCQOptionsControl = ({ options, correctAnswers, question, onReceiveFeedback, setIsTyping }) => {
+const MCQOptionsControl = ({ options, correctAnswers, question, onReceiveFeedback, setIsTyping, studentId, moduleId, questionId }) => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [isCorrect, setIsCorrect] = useState(null);
     const [feedback, setFeedback] = useState("");
@@ -18,6 +18,9 @@ const MCQOptionsControl = ({ options, correctAnswers, question, onReceiveFeedbac
     const handleCheckAnswer = async () => {
         if (selectedOption !== null) {
 
+            const sessionId = localStorage.getItem("sessionId");
+            const timestamp = new Date().toISOString();
+
             const correctAnswersArray = Array.isArray(correctAnswers) ? correctAnswers : [correctAnswers]; // Ensure it's always an array
 
             console.log("Selected Option (trimmed):", selectedOption.trim());
@@ -28,7 +31,21 @@ const MCQOptionsControl = ({ options, correctAnswers, question, onReceiveFeedbac
             const correct = correctAnswersArray.some(answer => String(answer).trim() === String(selectedOption).trim());
 
             console.log("Frontend Correct Check:", correct); // Debugging
-
+            fetch(`${BASE_URL}/log-attempt`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    sessionId: sessionId,
+                    studentId: studentId,
+                    moduleId: moduleId, // or pass via props
+                    questionId: questionId,
+                    eventType: "mcq-submit",
+                    userAnswers: selectedOption,
+                    correctAnswers: correctAnswers,
+                    isCorrect: correct,
+                    timestamp: timestamp,
+                }),
+            });
             setIsCorrect(correct);
 
             if (correct) {
@@ -108,6 +125,26 @@ const MCQOptionsControl = ({ options, correctAnswers, question, onReceiveFeedbac
                             setSelectedOption(option);
                             setIsCorrect(null);
                             setFeedback("");
+                            const sessionId = localStorage.getItem("sessionId");
+                            const timestamp = new Date().toISOString();
+                            const correctAnswersArray = Array.isArray(correctAnswers) ? correctAnswers : [correctAnswers]; // Ensure it's always an array
+                            const correct = correctAnswersArray.some(answer => String(answer).trim() === String(option).trim());
+                            fetch(`${BASE_URL}/log-attempt`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    sessionId,
+                                    studentId,
+                                    moduleId: moduleId,     // if present
+                                    questionId: questionId, // use appropriate identifier
+                                    eventType: "mcq-try",
+                                    message: option,
+                                    timestamp,
+                                    userAnswers: option,
+                                    correctAnswers: correctAnswers,
+                                    isCorrect: correct
+                                }),
+                            });
                         }}
                         style={{ cursor: "pointer" }}
                     >
@@ -118,7 +155,9 @@ const MCQOptionsControl = ({ options, correctAnswers, question, onReceiveFeedbac
                             className="radioButton"
                             value={option}
                             // onChange={handleOptionChange}
-                            onChange={() => { }}
+                            onChange={() => {
+
+                            }}
                             checked={selectedOption === option}
                             style={{ pointerEvents: "none" }}
                         />

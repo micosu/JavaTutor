@@ -34,6 +34,38 @@ const TestPage = () => {
             ...prev,
             [questionId]: value
         }));
+
+        const sessionId = localStorage.getItem("sessionId");
+        const studentGroup = sessionStorage.getItem("studentGroup");
+        const timestamp = new Date().toISOString();
+
+        const question = test.questions.find(q => q.id === questionId);
+        const correctAnswerIndex = question.options.indexOf(question.answer);
+        const correctAnswerText = question.answer;
+
+        const isCorrect = value === correctAnswerIndex;
+        console.log("isCorrect Test- ", isCorrect);
+
+        fetch(`${BASE_URL}/log-test-event`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                sessionId,
+                studentId,
+                moduleId,
+                questionId,
+                eventType: "test-mcq-try",
+                userAnswerIndex: value,
+                userAnswerText: question.options[value],
+                correctAnswerIndex,
+                correctAnswerText,
+                isCorrect,
+                timestamp,
+                studentGroup,
+                testType: testType
+            }),
+        });
+
     };
 
     const handleSubmit = async () => {
@@ -45,7 +77,9 @@ const TestPage = () => {
             }, {});
 
 
-
+            const sessionId = localStorage.getItem("sessionId");
+            const studentGroup = sessionStorage.getItem("studentGroup");
+            const timestamp = new Date().toISOString();
             console.log("correct answers - ", correctAnswers)
             console.log("Users answer - ", answers)
             console.log("Reflection response - ", reflectionResponse);
@@ -68,9 +102,28 @@ const TestPage = () => {
                 throw new Error("Failed to submit test");
             }
 
+
             const data = await response.json();
             console.log("Result obtained - ", data)
             console.log("The score is - ", data.score)
+
+            await fetch(`${BASE_URL}/log-test-event`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    sessionId,
+                    studentId,
+                    moduleId,
+                    eventType: "test-submit",
+                    testType,
+                    answers,
+                    correctAnswers,
+                    reflectionResponse: testType === "post-test" ? reflectionResponse : null,
+                    score: data.score,
+                    timestamp: new Date().toISOString(),
+                    studentGroup
+                }),
+            });
 
             const message = testType === "post-test"
                 ? `✅ Post-test submitted! You scored ${data.score}.`

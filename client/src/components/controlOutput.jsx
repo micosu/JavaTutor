@@ -7,6 +7,7 @@ const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 const ControlOutput = ({ CorrectAnswers, studentId, moduleId, questionId, feedbackMessage }) => {
     const [revealed, setRevealed] = useState(false);
     const chatEndRef = useRef(null);
+    const studentGroup = sessionStorage.getItem("studentGroup");
 
 
     useEffect(() => {
@@ -30,6 +31,23 @@ const ControlOutput = ({ CorrectAnswers, studentId, moduleId, questionId, feedba
 
             const data = await response.json();
             console.log("Reveal answer recorded:", data);
+
+            const sessionId = localStorage.getItem("sessionId");
+            const timestamp = new Date().toISOString();
+
+            await fetch(`${BASE_URL}/log-interaction`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    sessionId,
+                    studentId,
+                    moduleId,
+                    questionId,
+                    eventType: "reveal-answer",
+                    timestamp,
+                    studentGroup
+                }),
+            });
         } catch (error) {
             console.error("Error sending reveal answer data:", error);
         }

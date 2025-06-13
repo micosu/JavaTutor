@@ -94,6 +94,26 @@ const MCQPage = () => {
 
     const sendMessage = async (message) => {
         setIsTyping(true);
+        const sessionId = localStorage.getItem("sessionId");
+        const timestamp = new Date().toISOString();
+        const studentGroup = sessionStorage.getItem("studentGroup");
+
+        await fetch(`${BASE_URL}/log-interaction`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                sessionId,
+                studentId,
+                moduleId,     // make sure this is accessible via props/context
+                questionId,
+                eventType: "user-message",
+                message,
+                timestamp,
+                studentGroup
+            }),
+        });
         // Logic for checking student questions goes here
         const checkQuestion = async (message) => {
             try {
@@ -116,7 +136,7 @@ const MCQPage = () => {
                     throw new Error(data.error);
                 }
                 console.log("Check question response:", data);
-                if (data.includes("Yes")) {
+                if (data.answer.includes("Yes")) {
                     console.log("Student asking for full answer")
                     return false
                 } else {
@@ -173,6 +193,22 @@ const MCQPage = () => {
                         ...prevMessages,
                         { sender: "bot", text: data.response },
                     ]);
+                    await fetch(`${BASE_URL}/log-interaction`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            sessionId,
+                            studentId,
+                            moduleId,
+                            questionId,
+                            eventType: "bot-message",
+                            message: data.response,
+                            timestamp: new Date().toISOString(),
+                            studentGroup
+                        }),
+                    });
                 } catch (error) {
                     console.error(`Attempt failed (${maxRetries - retries + 1}):`, error);
                     if (retries > 1) {
@@ -186,6 +222,22 @@ const MCQPage = () => {
                                 text: "Error: Could not fetch a response. Please try again.",
                             },
                         ]);
+                        await fetch(`${BASE_URL}/log-interaction`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                sessionId,
+                                studentId,
+                                moduleId,
+                                questionId,
+                                eventType: "bot-message",
+                                message: "Error: Could not fetch a response. Please try again.",
+                                timestamp: new Date().toISOString(),
+                                studentGroup
+                            }),
+                        });
                     }
                 } finally {
                     setIsTyping(false);
@@ -199,6 +251,23 @@ const MCQPage = () => {
                 ...prevMessages,
                 { sender: "bot", text: "Sorry we detected that you are requesting the answer directly. Please try again." },
             ]);
+            await fetch(`${BASE_URL}/log-interaction`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    sessionId,
+                    studentId,
+                    moduleId,
+                    questionId,
+                    eventType: "bot-message",
+                    message: "Sorry we detected that you are requesting the answer directly. Please try again.",
+                    timestamp: new Date().toISOString(),
+                    studentGroup
+                }),
+            });
+
             setIsTyping(false);
         }
     };
@@ -327,7 +396,7 @@ const MCQPage = () => {
                 <div className="leftPart">
                     <ProblemMCQ statement={question.problemStatement} />
                     <CodeDisplayMCQ code={question.code} />
-                    <MCQOptions options={question.options} correctAnswers={question.correctAnswer} question={question} onReceiveFeedback={handleMCQFeedback} setIsTyping={setIsTyping} />
+                    <MCQOptions options={question.options} correctAnswers={question.correctAnswer} question={question} onReceiveFeedback={handleMCQFeedback} setIsTyping={setIsTyping} studentId={studentId} moduleId={moduleId} questionId={questionId} />
                 </div>
                 <div className="rightPart">
                     <BotMCQ

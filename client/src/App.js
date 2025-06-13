@@ -15,6 +15,7 @@ import TutorMCQControl from './pages/tutor-mcq-control';
 
 function App() {
   const [message, setMessage] = useState('');
+  const [sessionId, setSessionId] = useState(null);
 
   useEffect(() => {
     axios
@@ -26,6 +27,22 @@ function App() {
         console.error('Error:', error.response ? error.response.data : error.message);
       });
   }, []);
+
+  useEffect(() => {
+    const initializeSession = async () => {
+      let existingSessionId = localStorage.getItem("sessionId");
+      if (!existingSessionId) {
+        const res = await fetch("/create-session");
+        const data = await res.json();
+        existingSessionId = data.sessionId;
+        localStorage.setItem("sessionId", existingSessionId);
+      }
+      setSessionId(existingSessionId); // <-- 🔴 This was missing
+    };
+    initializeSession();
+  }, []);
+
+  if (!sessionId) return <div>Loading...</div>;
 
   return (
     // <div>
