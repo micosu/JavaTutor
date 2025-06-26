@@ -32,7 +32,7 @@ function App() {
     const initializeSession = async () => {
       let existingSessionId = localStorage.getItem("sessionId");
       if (!existingSessionId) {
-        const res = await fetch("/create-session");
+        const res = await fetch("/api/create-session");
         const data = await res.json();
         existingSessionId = data.sessionId;
         localStorage.setItem("sessionId", existingSessionId);
