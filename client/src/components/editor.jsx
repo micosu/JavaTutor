@@ -54,7 +54,7 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
 
         console.log("Is correct is", isCorrect, correctAnswers, userAnswers)
 
-        await fetch(`${BASE_URL}/log-attempt`, {
+        await fetch(`${BASE_URL}/api/log-attempt`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -122,7 +122,7 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
             ]);
             const newBotMessage = `Debugging Suggestion : ${data.suggestion}`;
 
-            await fetch(`${BASE_URL}/log-interaction`, {
+            await fetch(`${BASE_URL}/api/log-interaction`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -143,7 +143,7 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
                 { sender: "bot", text: `Error fetching debugging details` },
             ]);
             console.log("Error", error)
-            await fetch(`${BASE_URL}/log-interaction`, {
+            await fetch(`${BASE_URL}/api/log-interaction`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

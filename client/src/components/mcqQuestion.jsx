@@ -20,7 +20,7 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
         const correctAnswersArray = Array.isArray(correctAnswers) ? correctAnswers : [correctAnswers];
         const correct = correctAnswersArray.some(answer => String(answer).trim() === String(option).trim());
 
-        fetch(`${BASE_URL}/log-attempt`, {
+        fetch(`${BASE_URL}/api/log-attempt`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -55,7 +55,7 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
             const correct = correctAnswersArray.some(answer => String(answer).trim() === String(selectedOption).trim());
 
             console.log("Frontend Correct Check:", correct); // Debugging
-            fetch(`${BASE_URL}/log-attempt`, {
+            fetch(`${BASE_URL}/api/log-attempt`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -116,7 +116,7 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
 
                     const newBotMessage = `Debugging Suggestion : ${data.feedback}`;
 
-                    await fetch(`${BASE_URL}/log-interaction`, {
+                    await fetch(`${BASE_URL}/api/log-interaction`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -142,7 +142,7 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
 
                 } catch (error) {
                     setFeedback("Error: Unable to get feedback. Try again.");
-                    await fetch(`${BASE_URL}/log-interaction`, {
+                    await fetch(`${BASE_URL}/api/log-interaction`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -188,7 +188,7 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
                             const correctAnswersArray = Array.isArray(correctAnswers) ? correctAnswers : [correctAnswers];
                             const correct = correctAnswersArray.some(answer => String(answer).trim() === String(option).trim());
 
-                            fetch(`${BASE_URL}/log-attempt`, {
+                            fetch(`${BASE_URL}/api/log-attempt`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({

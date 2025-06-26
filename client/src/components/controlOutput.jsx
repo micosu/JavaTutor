@@ -35,7 +35,7 @@ const ControlOutput = ({ CorrectAnswers, studentId, moduleId, questionId, feedba
             const sessionId = localStorage.getItem("sessionId");
             const timestamp = new Date().toISOString();
 
-            await fetch(`${BASE_URL}/log-interaction`, {
+            await fetch(`${BASE_URL}/api/log-interaction`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

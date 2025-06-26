@@ -31,7 +31,7 @@ const MCQOptionsControl = ({ options, correctAnswers, question, onReceiveFeedbac
             const correct = correctAnswersArray.some(answer => String(answer).trim() === String(selectedOption).trim());
 
             console.log("Frontend Correct Check:", correct); // Debugging
-            fetch(`${BASE_URL}/log-attempt`, {
+            fetch(`${BASE_URL}/api/log-attempt`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -129,7 +129,7 @@ const MCQOptionsControl = ({ options, correctAnswers, question, onReceiveFeedbac
                             const timestamp = new Date().toISOString();
                             const correctAnswersArray = Array.isArray(correctAnswers) ? correctAnswers : [correctAnswers]; // Ensure it's always an array
                             const correct = correctAnswersArray.some(answer => String(answer).trim() === String(option).trim());
-                            fetch(`${BASE_URL}/log-attempt`, {
+                            fetch(`${BASE_URL}/api/log-attempt`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({

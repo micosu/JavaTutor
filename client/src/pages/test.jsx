@@ -46,7 +46,7 @@ const TestPage = () => {
         const isCorrect = value === correctAnswerIndex;
         console.log("isCorrect Test- ", isCorrect);
 
-        fetch(`${BASE_URL}/log-test-event`, {
+        fetch(`${BASE_URL}/api/log-test-event`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -107,7 +107,7 @@ const TestPage = () => {
             console.log("Result obtained - ", data)
             console.log("The score is - ", data.score)
 
-            await fetch(`${BASE_URL}/log-test-event`, {
+            await fetch(`${BASE_URL}/api/log-test-event`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

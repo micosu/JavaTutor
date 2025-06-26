@@ -12,6 +12,7 @@ import TestPage from './pages/test';
 import DashboardControl from './pages/dashboardControl';
 import TutorControl from './pages/tutorControl';
 import TutorMCQControl from './pages/tutor-mcq-control';
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
 function App() {
   const [message, setMessage] = useState('');
@@ -19,7 +20,7 @@ function App() {
 
   useEffect(() => {
     axios
-      .get('/api') // Automatically respects the proxy setting in package.json
+      .get(`${BASE_URL}/api`) // Automatically respects the proxy setting in package.json
       .then((response) => {
         setMessage(response.data.message);
       })
@@ -32,7 +33,7 @@ function App() {
     const initializeSession = async () => {
       let existingSessionId = localStorage.getItem("sessionId");
       if (!existingSessionId) {
-        const res = await fetch("/api/create-session");
+        const res = await fetch(`${BASE_URL}/api/create-session`);
         const data = await res.json();
         existingSessionId = data.sessionId;
         localStorage.setItem("sessionId", existingSessionId);

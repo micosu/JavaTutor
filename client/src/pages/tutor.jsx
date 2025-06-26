@@ -273,7 +273,7 @@ const Tutor = () => {
         const timestamp = new Date().toISOString();
         const studentGroup = sessionStorage.getItem("studentGroup");
 
-        await fetch(`${BASE_URL}/log-interaction`, {
+        await fetch(`${BASE_URL}/api/log-interaction`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -368,7 +368,7 @@ const Tutor = () => {
                         { sender: "bot", text: data.response },
                     ]);
 
-                    await fetch(`${BASE_URL}/log-interaction`, {
+                    await fetch(`${BASE_URL}/api/log-interaction`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -397,7 +397,7 @@ const Tutor = () => {
                                 text: "Error: Could not fetch a response. Please try again.",
                             },
                         ]);
-                        await fetch(`${BASE_URL}/log-interaction`, {
+                        await fetch(`${BASE_URL}/api/log-interaction`, {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
@@ -426,7 +426,7 @@ const Tutor = () => {
                 ...prevMessages,
                 { sender: "bot", text: "Sorry we detected that you are requesting the answer directly. Please try again." },
             ]);
-            await fetch(`${BASE_URL}/log-interaction`, {
+            await fetch(`${BASE_URL}/api/log-interaction`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
