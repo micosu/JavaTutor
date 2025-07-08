@@ -62,7 +62,7 @@ const TestPage = () => {
                 isCorrect,
                 timestamp,
                 studentGroup,
-                testType: testType
+                testType
             }),
         });
 
@@ -116,7 +116,7 @@ const TestPage = () => {
                     moduleId,
                     eventType: "test-submit",
                     testType,
-                    answers,
+                    userAnswers: answers,
                     correctAnswers,
                     reflectionResponse: testType === "post-test" ? reflectionResponse : null,
                     score: data.score,
