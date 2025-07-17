@@ -1,7 +1,10 @@
+// Pre and Post Test Page
+
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { tests } from "../constantTests";
 import "../assets/css/test.css";
+
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 const TestPage = () => {
     const { moduleId } = useParams();
@@ -44,8 +47,8 @@ const TestPage = () => {
         const correctAnswerText = question.answer;
 
         const isCorrect = value === correctAnswerIndex;
-        console.log("isCorrect Test- ", isCorrect);
-
+        
+        // Log test interactions to the backend collection testInteractions
         fetch(`${BASE_URL}/api/log-test-event`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -68,6 +71,7 @@ const TestPage = () => {
 
     };
 
+    // Submitting the test
     const handleSubmit = async () => {
         setIsSubmitting(true);
         try {
@@ -80,9 +84,8 @@ const TestPage = () => {
             const sessionId = localStorage.getItem("sessionId");
             const studentGroup = sessionStorage.getItem("studentGroup");
             const timestamp = new Date().toISOString();
-            console.log("correct answers - ", correctAnswers)
-            console.log("Users answer - ", answers)
-            console.log("Reflection response - ", reflectionResponse);
+
+            // Calling submit test api
             const response = await fetch(`${BASE_URL}/api/submit-test`, {
                 method: "POST",
                 headers: {
@@ -104,9 +107,8 @@ const TestPage = () => {
 
 
             const data = await response.json();
-            console.log("Result obtained - ", data)
-            console.log("The score is - ", data.score)
-
+           
+            // Logging test submission which includes all the user answers to the backend collection of testInteractions
             await fetch(`${BASE_URL}/api/log-test-event`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -130,9 +132,6 @@ const TestPage = () => {
                 : "✅ Pre-test submitted successfully!";
             sessionStorage.setItem("testSuccessMessage", message);
             localStorage.setItem("testSuccessMessage", message);
-            console.log("in messages", message)
-            console.log("testSuccessMessage set:", sessionStorage.getItem("testSuccessMessage"));
-            console.log("Setting testSuccessMessage...");
             setTimeout(() => {
                 window.close();
             }, 3000);
@@ -153,8 +152,7 @@ const TestPage = () => {
     ) : (
         <div className="test-container">
             <h1 className="test-title">{test.title}</h1>
-            {/* <p className="student-id">Student ID: {studentId}</p> */}
-
+        
             {test.questions.map((q) => (
                 <div key={q.id} className="question-card">
                     <p className="question-text">{q.question}</p>

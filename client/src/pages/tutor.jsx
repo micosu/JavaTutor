@@ -1,3 +1,4 @@
+// Tutor page for test students
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import '../assets/css/tutor.css'
@@ -17,12 +18,6 @@ const Tutor = () => {
     const location = useLocation();
 
     const { moduleId, questionId } = useParams();
-
-    console.log("You got this in the parameters", moduleId, questionId);
-
-    console.log("Modules data:", modules);
-    console.log("Received moduleId:", moduleId, "questionId:", questionId);
-
     const queryParams = new URLSearchParams(location.search);
     let studentId = queryParams.get("studentId") || sessionStorage.getItem("studentId");
 
@@ -42,12 +37,9 @@ const Tutor = () => {
     ]);
     const [isTyping, setIsTyping] = useState(false);
 
+    // Finding the matching module and question based on moduleId and questionId
     const module = modules.find(m => m.moduleId === Number(moduleId));
-    console.log("Matched module:", module);
-
     const question = module ? module.questions.find(q => q.questionId === Number(questionId)) : null;
-    console.log("Matched question:", question);
-
 
     useEffect(() => {
         if (!question) {
@@ -74,7 +66,6 @@ const Tutor = () => {
         const data = JSON.stringify({ studentId, conversationData });
 
         try {
-            console.log("🚀 Saving conversation...");
 
             // First try `fetch()`
             const response = await fetch(url, {
@@ -82,8 +73,6 @@ const Tutor = () => {
                 headers: { "Content-Type": "application/json" },
                 body: data,
             });
-
-            console.log("✅ API Response:", response.status);
 
             if (!response.ok) {
                 throw new Error(`API failed with status ${response.status}`);
@@ -108,7 +97,6 @@ const Tutor = () => {
 
     useEffect(() => {
         const handleUnload = async (event) => {
-            console.log("⚠️ Tab is attempting to close... Delaying closure by 5 seconds.");
 
             setSaving(true); // Show saving message in UI
 
@@ -116,8 +104,6 @@ const Tutor = () => {
             await new Promise(resolve => setTimeout(resolve, 5000));
 
             await storeConversationHistory(); // Save conversation
-
-            console.log("✅ Conversation saved. Closing tab...");
             setSaving(false); // Hide message
 
             // Attempt to close the tab automatically (works only for self-opened tabs)
@@ -134,6 +120,7 @@ const Tutor = () => {
 
 
 
+    // Cleaning code to remove extra whitespaces
     const sanitizeCode = (code) => {
         return code
             .replace(/\u00A0/g, " ") // Replace non-breaking spaces with normal spaces
@@ -141,11 +128,12 @@ const Tutor = () => {
             .trim(); // Remove leading and trailing whitespace
     };
 
+    // Running code
     const runCode = async (code) => {
-        console.log("Sending this code:", code);
         const sanitizedCode = sanitizeCode(code);
         const url = `${BASE_URL}/api/execute`;
 
+        // JDoodle Requested Format
         const requestBody = {
             clientId: "19f502d67b809bb3491c24a025bcef54", // Replace with your actual Client ID
             clientSecret: "20b8c7fc700ea1e56ee3076675ca8bda7192ebd799aa5101a620728c27d30dd6", // Replace with your actual Client Secret
@@ -170,7 +158,6 @@ const Tutor = () => {
             }
 
             const data = await response.json();
-            console.log("Execution result:", data);
             return data; // Returns the response, which includes the output
         } catch (error) {
             console.error("Error executing code:", error);
@@ -178,8 +165,8 @@ const Tutor = () => {
         }
     };
 
+    // Pressing run
     const handleRunCode = async (code, isCorrect) => {
-        console.log("I pressed run - ", isCorrect)
         setLoading(true); // Start loading
         const result = await runCode(code); // Call the JDoodle API
         setLoading(false); // End loading
@@ -194,6 +181,8 @@ const Tutor = () => {
                     ...prevMessages,
                     { sender: "bot", text: "Congratulations, you got the right answer and can move on! Press Done to store your progress." },
                 ]);
+
+                // If correct save progress
                 try {
                     const response = await fetch(`${BASE_URL}/api/student-progress`, {
                         method: "POST",
@@ -222,57 +211,14 @@ const Tutor = () => {
         }
     };
 
-    // const sendMessage = async (message) => {
-    //     // Append user message to chat
-    //     setIsTyping(true);
-    //     const updatedMessages = [...botMessages, { sender: "user", text: message }];
-    //     setBotMessages(updatedMessages);
-
-    //     try {
-    //         console.log("Payload being sent to /api/chat:", updatedMessages);
-    //         // Send conversation history to ChatGPT
-    //         const response = await fetch(`${BASE_URL}/api/chat`, {
-    //             method: "POST",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //             body: JSON.stringify({
-    //                 messages: updatedMessages.map((msg) => ({
-    //                     role: msg.sender === "user" ? "user" : "assistant",
-    //                     content: msg.text,
-    //                 })),
-    //             }),
-    //         });
-
-    //         const data = await response.json();
-
-    //         if (data.error) {
-    //             throw new Error(data.error);
-    //         }
-
-    //         // Append ChatGPT response to chat
-    //         setBotMessages((prevMessages) => [
-    //             ...prevMessages,
-    //             { sender: "bot", text: data.response },
-    //         ]);
-    //     } catch (error) {
-    //         console.error("❌ Error in Chat API:", error);
-    //         setBotMessages((prevMessages) => [
-    //             ...prevMessages,
-    //             { sender: "bot", text: "Error: Could not fetch a response. Please try again." },
-    //         ]);
-    //     } finally {
-    //         setIsTyping(false);
-    //     }
-    // };
-
+    // Chatting with Bot
     const sendMessage = async (message) => {
         setIsTyping(true);
         const sessionId = localStorage.getItem("sessionId");
-        console.log("Session ID from Tutor:", sessionId);
         const timestamp = new Date().toISOString();
         const studentGroup = sessionStorage.getItem("studentGroup");
 
+        // Storing the message in userInteractions
         await fetch(`${BASE_URL}/api/log-interaction`, {
             method: "POST",
             headers: {
@@ -289,9 +235,9 @@ const Tutor = () => {
                 studentGroup
             }),
         });
+        // Checking if student is asking for full answer
         const checkQuestion = async (message) => {
             try {
-                console.log("Checking student question:", message);
                 const response = await fetch(`${BASE_URL}/api/check-question`, {
                     method: "POST",
                     headers: {
@@ -309,12 +255,13 @@ const Tutor = () => {
                 if (data.error) {
                     throw new Error(data.error);
                 }
-                console.log("Check question response:", data);
+
+                // Student is asking for the answer
                 if (data.answer.includes("Yes")) {
-                    console.log("Student asking for full answer")
+            
                     return false
-                } else {
-                    console.log("Good student")
+                } else { // Student is not asking for answer
+                    
                     return true
                 }
             } catch (error) {
@@ -323,12 +270,11 @@ const Tutor = () => {
             }
         }
 
-        console.log("About to call checkQuestion", message);
+
         const isGoodStudent = await checkQuestion(message);
-        console.log("Is student good?", isGoodStudent);
+
 
         if (isGoodStudent) {
-            console.log("This is a good student example");
             const updatedMessages = [...botMessages, { sender: "user", text: message }];
             setBotMessages(updatedMessages);
 
@@ -339,11 +285,11 @@ const Tutor = () => {
                 })),
             };
 
+            // In case API times out, we retry max of 3 times
             const maxRetries = 3;
 
             const fetchWithRetry = async (retries, delay) => {
                 try {
-                    console.log("Payload being sent to /api/chat:", updatedMessages);
                     const response = await fetch(`${BASE_URL}/api/chat`, {
                         method: "POST",
                         headers: {
@@ -362,12 +308,12 @@ const Tutor = () => {
                         throw new Error(data.error);
                     }
 
-                    // Success: Add bot response
                     setBotMessages((prevMessages) => [
                         ...prevMessages,
                         { sender: "bot", text: data.response },
                     ]);
 
+                    // Store in userInteractions collection
                     await fetch(`${BASE_URL}/api/log-interaction`, {
                         method: "POST",
                         headers: {
@@ -397,6 +343,7 @@ const Tutor = () => {
                                 text: "Error: Could not fetch a response. Please try again.",
                             },
                         ]);
+                        // Storing error in user interactions collection
                         await fetch(`${BASE_URL}/api/log-interaction`, {
                             method: "POST",
                             headers: {
@@ -426,6 +373,7 @@ const Tutor = () => {
                 ...prevMessages,
                 { sender: "bot", text: "Sorry we detected that you are requesting the answer directly. Please try again." },
             ]);
+            // Storing student gaming the tutor in user interactions collection
             await fetch(`${BASE_URL}/api/log-interaction`, {
                 method: "POST",
                 headers: {
@@ -449,9 +397,9 @@ const Tutor = () => {
     if (!question) return null;
 
 
+    // Handle Done button click
     const handleDoneClick = async () => {
-        console.log("✅ Done button clicked, saving progress and conversation...");
-
+       
         // Save conversation history
         await storeConversationHistory();
 

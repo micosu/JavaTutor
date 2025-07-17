@@ -1,23 +1,28 @@
-import React, { useState, useEffect, useRef } from "react";
+// Bot component in MCQ page occupies a larger height and width and hence is in a different file. Working is the same.
 
+// Importing the required dependencies
+import React, { useState, useEffect, useRef } from "react";
 import '../assets/css/tutor.css'
 import BotMessage from "./botMessage";
 import UserMessage from "./userMessage";
-// import TypingLoader from "./typingLoader";
 
 const BotMCQ = ({ messages, isTyping, onSendMessage, onDone }) => {
     const [userInput, setUserInput] = useState("");
     const chatEndRef = useRef(null);
 
+    // Scroll to the end of the chat when `messages` updates
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
+
+    // Allow enter key to send message
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
             handleSend();
         }
     };
 
+    // Function to handle the send button click
     const handleSend = () => {
         if (userInput.trim() && !isTyping) {
             onSendMessage(userInput); // Pass the user message to the parent component
@@ -27,8 +32,7 @@ const BotMCQ = ({ messages, isTyping, onSendMessage, onDone }) => {
 
     const lastMessage = messages.length > 0 ? messages[messages.length - 1].text : "";
     const showDoneButton = lastMessage.includes("Press Done to store your progress");
-    console.log("showDoneButton", showDoneButton, lastMessage)
-
+   
     return (
         <div className="botMCQ">
             <p>Tutor</p>

@@ -1,3 +1,4 @@
+// Displays the student name
 import React from "react";
 
 const Name = ({ name }) => {

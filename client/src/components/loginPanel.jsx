@@ -1,14 +1,13 @@
+// This is the login panel for the tutor and handles login
 import React, { useState } from 'react'
 import '../assets/css/login.css'
 import users from '../assets/images/users.svg'
 import { useNavigate } from 'react-router-dom';
 
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
-console.log("Base url is -", BASE_URL)
 
 const LoginPanel = () => {
     const sessionId = localStorage.getItem("sessionId");
-    console.log("Session id is on Login Pane; -", sessionId)
     const [rollNumber, setRollNumber] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -19,6 +18,7 @@ const LoginPanel = () => {
             return;
         }
         try {
+            // Login API call
             const response = await fetch(`${BASE_URL}/api/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -26,11 +26,10 @@ const LoginPanel = () => {
             });
 
             const data = await response.json();
-            console.log("Data from login - ", data)
             if (response.ok) {
                 sessionStorage.setItem('studentId', data.user._id);
                 sessionStorage.setItem('studentGroup', data.user.type);
-                console.log("Data from login type - ", data.user.type)
+               
                 if (data.user.type == "test") {
                     navigate(`/home?studentId=${data.user._id}`);
                 }

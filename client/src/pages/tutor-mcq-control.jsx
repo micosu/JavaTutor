@@ -1,3 +1,4 @@
+// Tutor page for MCQ Questions in Control Condition
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import "../assets/css/tutor.css"
@@ -6,7 +7,6 @@ import Header from "../components/header";
 import ProblemMCQ from "../components/problemMCQ";
 import { modules } from '../constant'
 import CodeDisplayMCQ from "../components/codeDisplayMCQ";
-// import MCQOptions from "../components/mcqQuestion";
 import ControlOutputMCQ from "../components/controlOutputMCQ";
 import MCQOptionsControl from "../components/mcqQuestionControl";
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
@@ -31,11 +31,9 @@ const TutorMCQControl = () => {
         setStudentId(storedStudentId || "Unknown Student");
     }, [location.search]);
 
+    // Get the module and question based on moduleId and questionId
     const module = modules.find(m => m.moduleId === Number(moduleId));
-    console.log("Matched module:", module);
-
     const question = module ? module.questions.find(q => q.questionId === Number(questionId)) : null;
-    console.log("Matched question:", question);
 
     useEffect(() => {
         if (!question) {
@@ -45,12 +43,14 @@ const TutorMCQControl = () => {
     }, [question, navigate]);
 
 
+    // Store the bot message
     const handleMCQFeedback = async (feedbackMessage, sender) => {
         setBotMessages((prevMessages) => [...prevMessages, { sender, text: feedbackMessage }]);
         if (sender === "bot" && feedbackMessage.includes("Congratulations")) {
-            setFeedbackMessage(feedbackMessage); // NEW: Store the latest bot feedback
-            console.log("Got the right answer?")
+            setFeedbackMessage(feedbackMessage); // Store the latest bot feedback
+
             try {
+                // check the student's progress
                 const response = await fetch(`${BASE_URL}/api/student-progress`, {
                     method: "POST",
                     headers: {
@@ -65,7 +65,6 @@ const TutorMCQControl = () => {
 
                 const refreshProgress = await fetch(`${BASE_URL}/api/student-progress/${studentId}`);
                 const newProgress = await refreshProgress.json();
-                console.log("Updated progress:", newProgress);
             } catch (error) {
                 console.error("Error updating progress:", error);
             }
@@ -76,7 +75,6 @@ const TutorMCQControl = () => {
         { sender: "bot", text: "Hi! Welcome to the Java Course. Answer the question on the left." },
     ]);
     const [isTyping, setIsTyping] = useState(false);
-
 
     return (
         <div className="tutor">

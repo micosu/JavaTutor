@@ -1,13 +1,17 @@
+//  This is the reveal answers panel in the control version of the mcq tutor
+
+// Importing the required dependencies
 import React, { useState, useEffect, useRef } from "react";
 import '../assets/css/tutor.css'
 import BotMessage from "./botMessage";
 
+// When on production get base url from the env file and on localhost use the localhost version
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
+// Props - correct answers(array of correct answers), studentId (the student's id), moduleId (the current module), questionId(the current question)
 const ControlOutputMCQ = ({ CorrectAnswers, studentId, moduleId, questionId, feedbackMessage }) => {
     const [revealed, setRevealed] = useState(false);
     const chatEndRef = useRef(null);
-
 
     useEffect(() => {
         if (revealed || feedbackMessage) {
@@ -16,10 +20,12 @@ const ControlOutputMCQ = ({ CorrectAnswers, studentId, moduleId, questionId, fee
     }, [revealed, feedbackMessage]); // Auto-scroll on feedback update
 
 
+    // Reveal answer button click
     const handleClick = async () => {
         setRevealed(true);
 
         try {
+            // Storing in the students collection
             const response = await fetch(`${BASE_URL}/api/reveal-answer"`, {
                 method: "POST",
                 headers: {
@@ -33,6 +39,7 @@ const ControlOutputMCQ = ({ CorrectAnswers, studentId, moduleId, questionId, fee
             const sessionId = localStorage.getItem("sessionId");
             const timestamp = new Date().toISOString();
 
+            // Storing in the userInteractions collection
             await fetch(`${BASE_URL}/api/log-interaction`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -58,7 +65,6 @@ const ControlOutputMCQ = ({ CorrectAnswers, studentId, moduleId, questionId, fee
                     <button className="inter-bold reveal" onClick={handleClick}>Reveal Answers</button>
 
                     {/* Display feedback message dynamically */}
-
                     {revealed && (
                         <BotMessage
                             message={`Correct Answers: ${Array.isArray(CorrectAnswers)

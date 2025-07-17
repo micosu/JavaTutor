@@ -1,13 +1,18 @@
+//  Pre-test and post-test buttons
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
+
+// Props - studentId, moduleId, type(pre-test or post-test), isDisabled, onPreTestComplete (callback to mark completion of the test), setSuccessMessageTest (success message when test is successfully submitted), setShowMessageTest (callback to show success message)
 const TestButton = ({ studentId, moduleId, type, isDisabled, onPreTestComplete, setSuccessMessageTest,
     setShowMessageTest }) => {
     const navigate = useNavigate();
-    console.log("isDisabled", isDisabled);
     const [checked, setChecked] = useState(false);
     const [isTestCompleted, setIsTestCompleted] = useState(false); // ✅ Track if test is completed
 
+    // TO check which tests students have completed
     const fetchProgress = async () => {
         try {
             const response = await fetch(`${BASE_URL}/api/student-test-progress/${studentId}`);
@@ -18,9 +23,7 @@ const TestButton = ({ studentId, moduleId, type, isDisabled, onPreTestComplete, 
             const progressData = await response.json();
             const testField = `${type}-${moduleId}`;
 
-            console.log("Checking for testField:", testField);
-            console.log("Progress Data from API:", progressData.tests);
-
+    
             // ✅ Update checkbox without refreshing
             const isTestCompleted = progressData.tests?.[testField] || false;
             setChecked(isTestCompleted);
@@ -40,24 +43,25 @@ const TestButton = ({ studentId, moduleId, type, isDisabled, onPreTestComplete, 
         fetchProgress(); // ✅ Fetch progress on mount
     }, [studentId, moduleId, type]);
 
+    // When students click the test button
     const handleClick = (event) => {
         event.preventDefault();
         event.stopPropagation();
         if (isTestCompleted || isDisabled) return;
         let storedStudentId = sessionStorage.getItem("studentId") || studentId;
         if (!storedStudentId) {
-            console.error("Student ID missing. Redirecting to login.");
             navigate("/");
             return;
         }
 
+        // Going to pre-test or post-test
         const targetURL = type === "pre-test"
             ? `/pre-test/${moduleId}?studentId=${storedStudentId}`
             : `/post-test/${moduleId}?studentId=${storedStudentId}`;
 
 
+        // Opening test in a different window
         const testWindow = window.open(targetURL, "_blank");
-        // navigate(`/pre-test/${moduleId}?studentId=${studentId}`);
 
         // ✅ Check for test completion when the window is closed
         const checkTestCompletion = setInterval(() => {
@@ -88,8 +92,7 @@ const TestButton = ({ studentId, moduleId, type, isDisabled, onPreTestComplete, 
             <input
                 type="checkbox"
                 checked={checked}
-                // onChange={handleCheckboxChange}
-                disabled //
+                disabled 
                 className="questionCheckbox"
                 onClick={(e) => e.stopPropagation()}
             />

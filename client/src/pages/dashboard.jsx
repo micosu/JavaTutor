@@ -1,3 +1,5 @@
+// Dashboard page
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import '../assets/css/dashboard.css'
@@ -19,19 +21,14 @@ const modulesData = [
         type: "test", // This is a test, so redirect
         route: "/consent-form"
     },
-    // {
-    //     name: "CIT 111 Pre-test quiz",
-    //     type: "test", // This is a test, so redirect
-    //     route: "/pre-test"
-    // },
     {
         name: "CIT 111 Module 1: Control structures",
         type: "module",
         questions: [
             { text: "Question 1", questionType: "tutor" },
             { text: "Question 2", questionType: "tutor" },
-            { text: "Question 3", questionType: "tutor" }, // Multiple-choice question
-            { text: "Question 4", questionType: "tutor" }, // Multiple-choice question
+            { text: "Question 3", questionType: "tutor" },
+            { text: "Question 4", questionType: "tutor" },
             { text: "Question 5", questionType: "mcq" }, // Multiple-choice question
         ]
     },
@@ -41,16 +38,16 @@ const modulesData = [
         questions: [
             { text: "Question 1", questionType: "tutor" },
             { text: "Question 2", questionType: "tutor" },
-            { text: "Question 3", questionType: "tutor" }, // Multiple-choice question
-            { text: "Question 4", questionType: "tutor" }, // Multiple-choice question
-            { text: "Question 5", questionType: "tutor" }, // Multiple-choice question
+            { text: "Question 3", questionType: "tutor" },
+            { text: "Question 4", questionType: "tutor" },
+            { text: "Question 5", questionType: "tutor" },
             { text: "Question 6", questionType: "tutor" },
             { text: "Question 7", questionType: "tutor" },
             { text: "Question 8", questionType: "tutor" },
-            { text: "Question 9", questionType: "mcq" },
-            { text: "Question 10", questionType: "mcq" },
-            { text: "Question 11", questionType: "mcq" },
-            { text: "Question 12", questionType: "mcq" },
+            { text: "Question 9", questionType: "mcq" }, //multiple type question
+            { text: "Question 10", questionType: "mcq" },//multiple type question
+            { text: "Question 11", questionType: "mcq" },//multiple type question
+            { text: "Question 12", questionType: "mcq" },//multiple type question
         ]
     },
     {
@@ -59,16 +56,11 @@ const modulesData = [
         questions: [
             { text: "Question 1", questionType: "tutor" },
             { text: "Question 2", questionType: "tutor" },
-            { text: "Question 3", questionType: "tutor" }, // Multiple-choice question
-            { text: "Question 4", questionType: "tutor" }, // Multiple-choice question
-            { text: "Question 5", questionType: "tutor" }, // Multiple-choice question
+            { text: "Question 3", questionType: "tutor" },
+            { text: "Question 4", questionType: "tutor" },
+            { text: "Question 5", questionType: "tutor" },
         ]
     },
-    // {
-    //     name: "CIT 111 Post-test quiz",
-    //     type: "test", // This is a test, so redirect
-    //     route: "/post-test"
-    // }
 ];
 
 const Dashboard = () => {
@@ -82,23 +74,19 @@ const Dashboard = () => {
     const [successMessageTest, setSuccessMessageTest] = useState("");
     const [showMessageTest, setShowMessageTest] = useState(false);
     const sessionId = localStorage.getItem("sessionId");
-    console.log("Session ID from dashboard:", sessionId);
+
     const timer = setTimeout(() => {
         setSuccessMessage((prev) => (prev ? "hidden" : ""));
         setTimeout(() => setSuccessMessage(""), 1000); // Fully remove after fade out
     }, 5000);
 
     useEffect(() => {
-        window.scrollTo(0, 0); // Optional, if you want to scroll to top on load
+        window.scrollTo(0, 0); // Scroll to the top
 
         const consentMsg = sessionStorage.getItem("consentSuccessMessage");
         const testMsg = localStorage.getItem("testSuccessMessage");
 
-        console.log("Message from localStorage after test closed:", testMsg);
-
-
-        console.log("USe effect", consentMsg, testMsg);
-
+        // Display the consent or test submission message
         if (consentMsg) {
             setSuccessMessage(consentMsg);
             setShowMessage(true);
@@ -142,6 +130,7 @@ const Dashboard = () => {
 
         const fetchConsentStatus = async () => {
             try {
+                // Check if consent was filled
                 const response = await fetch(`${BASE_URL}/api/checkConsent/${studentId}`);
                 if (!response.ok) throw new Error("Failed to fetch consent status");
 
@@ -158,12 +147,12 @@ const Dashboard = () => {
         if (module.type === "test") {
             navigate(module.route); // Redirect for test modules
         } else {
+            // Opening the questions underneath
             setActiveModule(prev => (prev === index ? null : index)); // Toggle dropdown for other modules
         }
     };
 
     const queryParams = new URLSearchParams(location.search);
-
 
     const [studentName, setStudentName] = useState("");
     const [studentGroup, setStudentGroup] = useState("");
@@ -185,6 +174,7 @@ const Dashboard = () => {
 
         const fetchTestProgress = async () => {
             try {
+                // Check if the pre-test is completed and the post test
                 const response = await fetch(`${BASE_URL}/api/student-test-progress/${studentId}`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch test progress");
@@ -213,11 +203,9 @@ const Dashboard = () => {
                 }
 
                 let completedData = await response.json();
-                console.log("Raw Completed Questions Data:", completedData);
 
                 // ✅ Filter out empty strings or invalid data
                 completedData = completedData.filter(q => typeof q === "object" && q.moduleId !== undefined && q.questionId !== undefined);
-                console.log("Filtered Completed Questions Data:", completedData);
 
                 // ✅ Ensure all questions in a module are completed before unlocking post-test
                 const completedStatus = {};
@@ -233,15 +221,12 @@ const Dashboard = () => {
                         .filter(q => String(q.moduleId) === String(index))
                         .map(q => String(q.questionId));
 
-                    console.log(`Module ${index} - Completed Questions:`, completedQuestions);
-
                     // ✅ Ensure all questions in the module are completed
                     const allQuestionsDone = module.questions.every((_, qIndex) =>
                         completedQuestions.includes(String(qIndex + 1))
                     );
 
                     completedStatus[index] = allQuestionsDone;
-                    console.log("Completed Status ", completedStatus)
                 });
                 setCompletedQuestions((prev) => ({ ...prev, ...completedStatus }));
             } catch (error) {
@@ -280,23 +265,12 @@ const Dashboard = () => {
 
             // ✅ Check if all questions are done
             const allQuestionsDone = completedInModule.length === totalQuestions;
-
-            console.log(`Module ${moduleId} - Completed Questions:`, completedInModule);
-            console.log(`Module ${moduleId} - Total Questions: ${totalQuestions}, All Done: ${allQuestionsDone}`);
-
             return {
                 ...prev,
                 [moduleId]: allQuestionsDone ? ["ALL_DONE"] : completedInModule, // ✅ Always an array
             };
         });
     };
-
-
-
-    useEffect(() => {
-        console.log("Updated completedQuestions:", completedQuestions);
-    }, [completedQuestions]);
-
 
     useEffect(() => {
         if (!studentId) return; // Don't fetch if no studentId is provided

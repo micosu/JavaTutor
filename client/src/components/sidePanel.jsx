@@ -1,3 +1,4 @@
+// Side panel component. Currently for Java, but can be reused if tutor is expanded
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/css/dashboard.css";

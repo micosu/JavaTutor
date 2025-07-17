@@ -1,3 +1,5 @@
+// Tutor page for control students
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import '../assets/css/tutor.css'
@@ -20,15 +22,9 @@ const TutorControl = () => {
     const [isTyping, setIsTyping] = useState(false);
     const [feedbackMessage, setFeedbackMessage] = useState(""); // ✅ New state
 
-
-
     const [botMessages, setBotMessages] = useState([
         { sender: "bot", text: "Hi! Welcome to the Java Course. Start coding on the right. If you run into any errors, just ask. If the output is wrong, I will try my best to guide you." },
     ]);
-
-    console.log("You got this in the parameters", moduleId, questionId);
-    console.log("Modules data:", modules);
-    console.log("Received moduleId:", moduleId, "questionId:", questionId);
 
     const queryParams = new URLSearchParams(location.search);
     let studentId = queryParams.get("studentId") || sessionStorage.getItem("studentId");
@@ -42,11 +38,10 @@ const TutorControl = () => {
     }, [navigate, studentId]);
 
 
+    // Finding the matching module and question based on moduleId and questionId
     const module = modules.find(m => m.moduleId === Number(moduleId));
-    console.log("Matched module:", module);
-
     const question = module ? module.questions.find(q => q.questionId === Number(questionId)) : null;
-    console.log("Matched question:", question);
+
 
     useEffect(() => {
         if (!question) {
@@ -55,6 +50,7 @@ const TutorControl = () => {
         }
     }, [question, navigate]);
 
+    // Cleaning code to remove extra whitespaces
     const sanitizeCode = (code) => {
         return code
             .replace(/\u00A0/g, " ") // Replace non-breaking spaces with normal spaces
@@ -62,11 +58,12 @@ const TutorControl = () => {
             .trim(); // Remove leading and trailing whitespace
     };
 
+    // Running code
     const runCode = async (code) => {
-        console.log("Sending this code:", code);
         const sanitizedCode = sanitizeCode(code);
         const url = `${BASE_URL}/api/execute`;
 
+        // Body requested by JDoodle
         const requestBody = {
             clientId: "19f502d67b809bb3491c24a025bcef54", // Replace with your actual Client ID
             clientSecret: "20b8c7fc700ea1e56ee3076675ca8bda7192ebd799aa5101a620728c27d30dd6", // Replace with your actual Client Secret
@@ -91,7 +88,6 @@ const TutorControl = () => {
             }
 
             const data = await response.json();
-            console.log("Execution result:", data);
             return data; // Returns the response, which includes the output
         } catch (error) {
             console.error("Error executing code:", error);
@@ -99,8 +95,8 @@ const TutorControl = () => {
         }
     };
 
+    // Pressing run button
     const handleRunCode = async (code, isCorrect) => {
-        console.log("I pressed run - ", isCorrect)
         setLoading(true); // Start loading
         const result = await runCode(code); // Call the JDoodle API
         setLoading(false); // End loading
@@ -117,7 +113,6 @@ const TutorControl = () => {
                     ...prevMessages,
                     { sender: "bot", text: successMessage },
                 ]);
-                console.log("Got the right answer?")
                 try {
                     const response = await fetch(`${BASE_URL}/api/student-progress`, {
                         method: "POST",
@@ -126,14 +121,12 @@ const TutorControl = () => {
                         },
                         body: JSON.stringify({ studentId, moduleId, questionId, isChecked: true })
                     });
-                    console.log("Called API to update progress", response);
                     if (!response.ok) {
                         throw new Error("Failed to update progress");
                     }
 
                     const refreshProgress = await fetch(`${BASE_URL}/api/student-progress/${studentId}`);
                     const newProgress = await refreshProgress.json();
-                    console.log("Updated progress:", newProgress);
                 } catch (error) {
                     console.error("Error updating progress:", error);
                 }

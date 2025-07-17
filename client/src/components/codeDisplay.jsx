@@ -1,13 +1,18 @@
+// The code editor component, that displays the code as fill in the blanks.
+
+// Importing the required dependencies
 import React, { useState, useRef, useEffect } from "react";
 
+// Props - codeString (the code to be displayed), onCodeChange (callback function to update the full code), correctAnswers (the correct answers for each blank) onInputChange(callback function to update the user inputs)
 const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange }) => {
     const sessionId = localStorage.getItem("sessionId");
-    console.log("Session ID from code display:", sessionId);
     const [inputs, setInputs] = useState({}); // To track user input for blanks
     const [inputStyles, setInputStyles] = useState({}); // To track border styles for inputs
 
     const validateRef = useRef(() => { });
     // Update inputs as user types
+
+    // Handling input change
     const handleChange = (key, value) => {
         const updatedInputs = { ...inputs, [key]: value || "" }; // Ensure no undefined values
         setInputs(updatedInputs);
@@ -22,21 +27,6 @@ const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange 
             onCodeChange(fullCode);
         }
     };
-
-    // Validate inputs when the Run button is clicked
-    // const validateInputs = () => {
-    //     const updatedStyles = {};
-
-    //     // Iterate through each placeholder and check against correct answers
-    //     Object.keys(inputs).forEach((key, index) => {
-    //         const userAnswer = (inputs[key] || "").trim();
-    //         const correctAnswer = (correctAnswers[index] || "").trim();
-    //         updatedStyles[key] =
-    //             userAnswer === correctAnswer ? "4px solid #1cf306" : "4px solid red";
-    //     });
-
-    //     setInputStyles(updatedStyles); // Update the input styles based on validation
-    // };
 
     // Inside useEffect so the latest `inputs` are always captured
     useEffect(() => {

@@ -1,3 +1,5 @@
+// Tutor page for MCQ Questions for test students
+
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import "../assets/css/tutor.css"
@@ -35,10 +37,8 @@ const MCQPage = () => {
     }, [location.search]);
 
     const module = modules.find(m => m.moduleId === Number(moduleId));
-    console.log("Matched module:", module);
 
     const question = module ? module.questions.find(q => q.questionId === Number(questionId)) : null;
-    console.log("Matched question:", question);
 
     useEffect(() => {
         if (!question) {
@@ -47,57 +47,13 @@ const MCQPage = () => {
         }
     }, [question, navigate]);
 
-    // const sendMessage = async (message) => {
-    //     setIsTyping(true);
-    //     // Append user message to chat
-    //     const updatedMessages = [...botMessages, { sender: "user", text: message }];
-    //     setBotMessages(updatedMessages);
-
-
-    //     try {
-    //         console.log("Payload being sent to /api/chat:", updatedMessages);
-    //         // Send conversation history to ChatGPT
-    //         const response = await fetch(`${BASE_URL}/api/chat`, {
-    //             method: "POST",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //             body: JSON.stringify({
-    //                 messages: updatedMessages.map((msg) => ({
-    //                     role: msg.sender === "user" ? "user" : "assistant",
-    //                     content: msg.text,
-    //                 })),
-    //             }),
-    //         });
-
-    //         const data = await response.json();
-
-    //         if (data.error) {
-    //             throw new Error(data.error);
-    //         }
-
-    //         // Append ChatGPT response to chat
-    //         setBotMessages((prevMessages) => [
-    //             ...prevMessages,
-    //             { sender: "bot", text: data.response },
-    //         ]);
-    //     } catch (error) {
-    //         console.error("❌ Error in Chat API:", error);
-    //         setBotMessages((prevMessages) => [
-    //             ...prevMessages,
-    //             { sender: "bot", text: "Error: Could not fetch a response. Please try again." },
-    //         ]);
-    //     } finally {
-    //         setIsTyping(false);
-    //     }
-    // };
-
     const sendMessage = async (message) => {
         setIsTyping(true);
         const sessionId = localStorage.getItem("sessionId");
         const timestamp = new Date().toISOString();
         const studentGroup = sessionStorage.getItem("studentGroup");
 
+        // Storing the message in the userInteractions collection
         await fetch(`${BASE_URL}/api/log-interaction`, {
             method: "POST",
             headers: {
@@ -114,10 +70,10 @@ const MCQPage = () => {
                 studentGroup
             }),
         });
-        // Logic for checking student questions goes here
+        // Logic for checking student questions to avoid gaming goes here
         const checkQuestion = async (message) => {
             try {
-                console.log("Checking student question:", message);
+
                 const response = await fetch(`${BASE_URL}/api/check-question`, {
                     method: "POST",
                     headers: {
@@ -135,11 +91,13 @@ const MCQPage = () => {
                 if (data.error) {
                     throw new Error(data.error);
                 }
-                console.log("Check question response:", data);
+
+                // Student is asking for the answer
                 if (data.answer.includes("Yes")) {
                     console.log("Student asking for full answer")
                     return false
                 } else {
+                    // Student is not asking for the answer
                     console.log("Good student")
                     return true
                 }
@@ -149,12 +107,9 @@ const MCQPage = () => {
             }
         }
 
-        console.log("About to call checkQuestion", message);
         const isGoodStudent = await checkQuestion(message);
-        console.log("Is student good?", isGoodStudent);
 
         if (isGoodStudent) {
-            console.log("This is a good student example");
             const updatedMessages = [...botMessages, { sender: "user", text: message }];
             setBotMessages(updatedMessages);
 
@@ -165,11 +120,11 @@ const MCQPage = () => {
                 })),
             };
 
+            // In case the api takes a long time, we try a max of 3 times
             const maxRetries = 3;
 
             const fetchWithRetry = async (retries, delay) => {
                 try {
-                    console.log("Payload being sent to /api/chat:", updatedMessages);
                     const response = await fetch(`${BASE_URL}/api/chat`, {
                         method: "POST",
                         headers: {
@@ -188,11 +143,11 @@ const MCQPage = () => {
                         throw new Error(data.error);
                     }
 
-                    // Success: Add bot response
                     setBotMessages((prevMessages) => [
                         ...prevMessages,
                         { sender: "bot", text: data.response },
                     ]);
+                    // Store in userInteractions collection
                     await fetch(`${BASE_URL}/api/log-interaction`, {
                         method: "POST",
                         headers: {
@@ -222,6 +177,7 @@ const MCQPage = () => {
                                 text: "Error: Could not fetch a response. Please try again.",
                             },
                         ]);
+                        // Store failure in userInteractions collection
                         await fetch(`${BASE_URL}/api/log-interaction`, {
                             method: "POST",
                             headers: {
@@ -251,6 +207,7 @@ const MCQPage = () => {
                 ...prevMessages,
                 { sender: "bot", text: "Sorry we detected that you are requesting the answer directly. Please try again." },
             ]);
+            // Store gaming tutor evidence in userInteractions collection
             await fetch(`${BASE_URL}/api/log-interaction`, {
                 method: "POST",
                 headers: {
@@ -273,11 +230,13 @@ const MCQPage = () => {
     };
 
 
+    // Handling the mcq answer selection
     const handleMCQFeedback = async (feedbackMessage, sender) => {
         setBotMessages((prevMessages) => [...prevMessages, { sender, text: feedbackMessage }]);
         if (sender === "bot" && feedbackMessage.includes("Congratulations")) {
-            console.log("Got the right answer?")
+
             try {
+                // Check the progress
                 const response = await fetch(`${BASE_URL}/api/student-progress`, {
                     method: "POST",
                     headers: {
@@ -285,14 +244,13 @@ const MCQPage = () => {
                     },
                     body: JSON.stringify({ studentId, moduleId, questionId, isChecked: true })
                 });
-                console.log("Called API to update progress", response);
                 if (!response.ok) {
                     throw new Error("Failed to update progress");
                 }
 
                 const refreshProgress = await fetch(`${BASE_URL}/api/student-progress/${studentId}`);
                 const newProgress = await refreshProgress.json();
-                console.log("Updated progress:", newProgress);
+               
             } catch (error) {
                 console.error("Error updating progress:", error);
             }
@@ -317,16 +275,13 @@ const MCQPage = () => {
         const data = JSON.stringify({ studentId, conversationData });
 
         try {
-            console.log("🚀 Saving conversation...");
-
+           
             // First try `fetch()`
             const response = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: data,
             });
-
-            console.log("✅ API Response:", response.status);
 
             if (!response.ok) {
                 throw new Error(`API failed with status ${response.status}`);
@@ -352,8 +307,6 @@ const MCQPage = () => {
 
     useEffect(() => {
         const handleUnload = async (event) => {
-            console.log("⚠️ Tab is attempting to close... Delaying closure by 5 seconds.");
-
             setSaving(true); // Show saving message in UI
 
             // Delay the tab close for 5 seconds
@@ -375,9 +328,8 @@ const MCQPage = () => {
         };
     }, [botMessages]);
 
+    // When student clicks the done button
     const handleDoneClick = async () => {
-        console.log("✅ Done button clicked, saving progress and conversation...");
-
         // Save conversation history
         await storeConversationHistory();
 

@@ -1,8 +1,10 @@
+// This is the mcq question component in the tutor and control version of the tutor
 import React, { useState } from "react";
-import "../assets/css/tutor.css"; // Ensure this CSS file exists
+import "../assets/css/tutor.css";
 
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
+// Props - options(option choices), correctAnswers(correct answers), question(question text), onReceiveFeedback(on recieving feedback), setIsTyping(typing loader)
 const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setIsTyping, studentId, moduleId, questionId }) => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [isCorrect, setIsCorrect] = useState(null);
@@ -47,14 +49,9 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
 
             const correctAnswersArray = Array.isArray(correctAnswers) ? correctAnswers : [correctAnswers]; // Ensure it's always an array
 
-            console.log("Selected Option (trimmed):", selectedOption.trim());
-            // console.log("Correct Answers (trimmed):", correctAnswers.map(answer => answer.trim()));
-            console.log("correctAnswers:", correctAnswers);
-            console.log("Type of correctAnswers:", typeof correctAnswers);
-
             const correct = correctAnswersArray.some(answer => String(answer).trim() === String(selectedOption).trim());
 
-            console.log("Frontend Correct Check:", correct); // Debugging
+            // Store the attempt in the userInteractions collection
             fetch(`${BASE_URL}/api/log-attempt`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -83,7 +80,6 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
                     onReceiveFeedback(successMessage, "bot"); // Send to chatbot
                 }
             } else {
-                console.log("❌ Answer is incorrect on frontend. Fetching feedback...");
                 if (setIsTyping) setIsTyping(true);
                 try {
                     const wrongAnswerMessage = "❌ Your answer is wrong. Let me help you.";
@@ -93,8 +89,6 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
                     }
 
                     await new Promise(resolve => setTimeout(resolve, 800));
-
-                    console.log("Fetching feedback from bot for incorrect answer...");
 
                     const response = await fetch(`${BASE_URL}/api/mcq-feedback`, {
                         method: "POST",
@@ -116,6 +110,7 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
 
                     const newBotMessage = `Debugging Suggestion : ${data.feedback}`;
 
+                    // Store the bot message in the userInteractions collection
                     await fetch(`${BASE_URL}/api/log-interaction`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -131,7 +126,6 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
                         }),
                     });
 
-
                     if (!correct) {
                         setFeedback(data.feedback);
                         if (onReceiveFeedback) {
@@ -142,6 +136,8 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
 
                 } catch (error) {
                     setFeedback("Error: Unable to get feedback. Try again.");
+
+                    // Storing the failed bot message in the userInteractions collection
                     await fetch(`${BASE_URL}/api/log-interaction`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -188,6 +184,7 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
                             const correctAnswersArray = Array.isArray(correctAnswers) ? correctAnswers : [correctAnswers];
                             const correct = correctAnswersArray.some(answer => String(answer).trim() === String(option).trim());
 
+                            // Store the interaction in the userInteractions collection
                             fetch(`${BASE_URL}/api/log-attempt`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
@@ -214,10 +211,8 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
                             id={`option-${index}`}
                             className="radioButton"
                             value={option}
-                            // onChange={handleOptionChange}
                             onChange={() => { }}
                             checked={selectedOption === option}
-                        // style={{ pointerEvents: "none" }}
                         />
                         <label htmlFor={`option-${index}`} className="optionLabel">
                             {option}

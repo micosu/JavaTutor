@@ -1,3 +1,5 @@
+// The MCQOptions Control component
+
 import React, { useState } from "react";
 import "../assets/css/tutor.css"; // Ensure this CSS file exists
 
@@ -23,14 +25,10 @@ const MCQOptionsControl = ({ options, correctAnswers, question, onReceiveFeedbac
 
             const correctAnswersArray = Array.isArray(correctAnswers) ? correctAnswers : [correctAnswers]; // Ensure it's always an array
 
-            console.log("Selected Option (trimmed):", selectedOption.trim());
-            // console.log("Correct Answers (trimmed):", correctAnswers.map(answer => answer.trim()));
-            console.log("correctAnswers:", correctAnswers);
-            console.log("Type of correctAnswers:", typeof correctAnswers);
-
             const correct = correctAnswersArray.some(answer => String(answer).trim() === String(selectedOption).trim());
 
-            console.log("Frontend Correct Check:", correct); // Debugging
+            
+            // Store the attempt in the userInteractions collection
             fetch(`${BASE_URL}/api/log-attempt`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -58,7 +56,6 @@ const MCQOptionsControl = ({ options, correctAnswers, question, onReceiveFeedbac
                     onReceiveFeedback(successMessage, "bot"); // Send to chatbot
                 }
             } else {
-                console.log("❌ Answer is incorrect on frontend. Fetching feedback...");
                 if (setIsTyping) setIsTyping(true);
                 try {
                     const wrongAnswerMessage = "❌ Your answer is wrong. Let me help you.";
@@ -69,8 +66,7 @@ const MCQOptionsControl = ({ options, correctAnswers, question, onReceiveFeedbac
 
                     await new Promise(resolve => setTimeout(resolve, 800));
 
-                    console.log("Fetching feedback from bot for incorrect answer...");
-
+                    // Get bot response - unused for control component
                     const response = await fetch(`${BASE_URL}/api/mcq-feedback`, {
                         method: "POST",
                         headers: {
@@ -86,8 +82,6 @@ const MCQOptionsControl = ({ options, correctAnswers, question, onReceiveFeedbac
                     });
 
                     const data = await response.json();
-
-                    console.log("Bot response:", data);
 
                     if (!correct) {
                         setFeedback(data.feedback);
@@ -154,7 +148,6 @@ const MCQOptionsControl = ({ options, correctAnswers, question, onReceiveFeedbac
                             id={`option-${index}`}
                             className="radioButton"
                             value={option}
-                            // onChange={handleOptionChange}
                             onChange={() => {
 
                             }}

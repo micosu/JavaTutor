@@ -1,8 +1,11 @@
+// Consent form page
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/css/consentForm.css"
 
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
+
 const ConsentForm = () => {
     const navigate = useNavigate();
     const [studentId, setStudentId] = useState(null);
@@ -15,7 +18,6 @@ const ConsentForm = () => {
 
     useEffect(() => {
         let storedStudentId = sessionStorage.getItem("studentId");
-
         if (!storedStudentId) {
             navigate("/"); // Redirect to login if studentId is missing
         } else {
@@ -45,6 +47,7 @@ const ConsentForm = () => {
         }
 
         try {
+            // Store consent form data to students collection
             const response = await fetch(`${BASE_URL}/api/storeConsent`, {
                 method: "POST",
                 headers: {
@@ -68,8 +71,6 @@ const ConsentForm = () => {
             alert("Error submitting form. Please try again.");
         }
 
-        console.log("Form Data Submitted:", formData);
-        // alert("Consent form submitted successfully!");
     };
     return (
         <div className="consent-form">

@@ -1,5 +1,7 @@
+// Displays the output from the java code execution
 import React from 'react'
 
+// Props- output - output from the java code, loading - boolean to indicate if the output is loading
 const Output = ({ output, loading }) => {
     return (
         <div className="output">

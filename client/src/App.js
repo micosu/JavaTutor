@@ -1,3 +1,4 @@
+// Main entry point
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Routes, Route } from 'react-router-dom';
@@ -7,11 +8,11 @@ import Tutor from './pages/tutor';
 import Dashboard from './pages/dashboard';
 import MCQPage from './pages/tutor-mcq';
 import ConsentForm from './pages/consentForm';
-// import Test from './pages/test';
 import TestPage from './pages/test';
 import DashboardControl from './pages/dashboardControl';
 import TutorControl from './pages/tutorControl';
 import TutorMCQControl from './pages/tutor-mcq-control';
+
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
       });
   }, []);
 
+  // Creating session ID's
   useEffect(() => {
     const initializeSession = async () => {
       let existingSessionId = localStorage.getItem("sessionId");
@@ -46,10 +48,6 @@ function App() {
   if (!sessionId) return <div>Loading...</div>;
 
   return (
-    // <div>
-    //   <LoginPage />
-    // </div>
-
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/home" element={<Dashboard />} />
