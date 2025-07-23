@@ -29,3 +29,15 @@ npm run start
 
 5. You should see the message `Starting the development server` in your terminal.
 
+## Deploying
+
+In the client folder, simply type the following -
+
+```
+vercel --prod
+```
+
+This will deploy the frontend to production environment on vercel. When you log in to vercel, you will see the latest deployment it is serving. 
+
+
+
