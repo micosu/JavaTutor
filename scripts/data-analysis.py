@@ -1,3 +1,4 @@
+# Import necessary libraries
 import pymongo
 import gspread
 import json
@@ -5,11 +6,11 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 # ----- Step 1: Set up Google Sheets access -----
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("fow-data-analysis.json", scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name("fow-data-analysis.json", scope) #set your own JSON files
 client = gspread.authorize(creds)
 
 # Open the Google Sheet
-sheet = client.open("Data Analysis - Java Tutor").sheet1
+sheet = client.open("Data Analysis - Java Tutor").sheet1 
 
 # ----- Step 2: Set up MongoDB access -----
 mongo_client = pymongo.MongoClient("mongodb+srv://dmondhe:FOW25Java@cluster0.i7tisuz.mongodb.net/FOW?retryWrites=true&w=majority&appName=Cluster0g")
@@ -43,14 +44,18 @@ for student in students:
     completed_questions = student.get("completedQuestions", [])
     conversation_history = student.get("conversationHistory", [])
 
+    # Convert lists to JSON strings for better readability in the sheet
     str_completed_questions = json.dumps(completed_questions)
     str_conversation_history = json.dumps(conversation_history)
 
+    # Count completed questions and conversations
     completed_questions_count = 0 if len(completed_questions) <= 1 else len(completed_questions)
     conversation_history_count = 0 if len(conversation_history) <= 1 else len(conversation_history)
 
+    # Extract test information
     tests = student.get("tests", {})
 
+    # Helper function to get test score and answers
     def get_test_info(test_key):
         test = tests.get(test_key, {})
         score = test.get("score", "")
@@ -58,6 +63,7 @@ for student in students:
         answers_str = json.dumps(answers) if isinstance(answers, dict) else str(answers)
         return score, answers_str
 
+    # Prepare the row data
     row = [
         student.get("name", ""),
         student.get("rollNumber", ""),
@@ -69,10 +75,11 @@ for student in students:
         str_completed_questions,
         str_conversation_history          # Convert list of dicts to string
     ]
-
+    # Append test scores and answers
     for test_key in ["pre-test-1", "pre-test-2", "pre-test-3", "post-test-1", "post-test-2", "post-test-3"]:
         score, answers = get_test_info(test_key)
         row.extend([score, answers])
     sheet.append_row(row)
 
+# ----- Step 6: Confirmation message -----
 print("✅ Data transfer complete!")

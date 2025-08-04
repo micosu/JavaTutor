@@ -1,3 +1,4 @@
+# Import necessary libraries
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from pymongo import MongoClient
@@ -47,7 +48,6 @@ def format_doc(doc):
         row['timestamp'] = str(ts)
     row['moduleID'] = doc.get('moduleId', '')
     row['questionID'] = doc.get('questionId', '')
-    # Problem name goes here
     moduleId = doc.get('moduleId', '')
     questionId = doc.get('questionId', '')
     testType = doc.get('testType', '')
