@@ -10,7 +10,7 @@ const Header = ({ topic, problem }) => {
         <div className='header'>
             <div><img className="logo" src={logo} alt="" /></div>
             <div><p>{topic}</p></div>
-            <div class="line"></div>
+            <div className="line"></div>
             <div><p>{problem}</p></div>
         </div>
     )

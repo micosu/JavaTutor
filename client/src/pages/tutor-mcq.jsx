@@ -19,7 +19,7 @@ const MCQPage = () => {
     const [studentId, setStudentId] = useState("");
 
     const [botMessages, setBotMessages] = useState([
-        { sender: "bot", text: "Hi! Welcome to the Java Course. Answer the question on the left. If you run into any errors, just ask. If the answer is wrong, I will try my best to guide you." },
+        { sender: "bot", text: "Hi! Welcome to the Java Course. If you have any questions, feel free to ask them here!" },
     ]);
     const [isTyping, setIsTyping] = useState(false);
 

@@ -21,6 +21,7 @@ const Tutor = () => {
     const queryParams = new URLSearchParams(location.search);
     let studentId = queryParams.get("studentId") || sessionStorage.getItem("studentId");
 
+    const [hasAttempted, setHasAttempted] = useState(false);
 
     useEffect(() => {
         if (!studentId) {
@@ -33,7 +34,7 @@ const Tutor = () => {
     const [output, setOutput] = useState("");
     const [loading, setLoading] = useState(false); // Track loading state
     const [botMessages, setBotMessages] = useState([
-        { sender: "bot", text: "Hi! Welcome to the Java Course. Start coding on the right. Ask me if you get stuck at any point." },
+        { sender: "bot", text: "Hi! Welcome to the Java Course. I'm here to help if you get stuck.  But before you can ask for help, give the problem on the right a try!" },
     ]);
     const [isTyping, setIsTyping] = useState(false);
 
@@ -130,6 +131,7 @@ const Tutor = () => {
 
     // Running code
     const runCode = async (code) => {
+        setHasAttempted(true)
         const sanitizedCode = sanitizeCode(code);
         const url = `${BASE_URL}/api/execute`;
 
@@ -235,6 +237,11 @@ const Tutor = () => {
                 studentGroup
             }),
         });
+        if (!hasAttempted) {
+            alert("Attempt the problem before you ask for help!");
+            setIsTyping(false);
+            return;
+        } 
         // Checking if student is asking for full answer
         const checkQuestion = async (message) => {
             try {
