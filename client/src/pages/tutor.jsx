@@ -137,8 +137,6 @@ const Tutor = () => {
 
         // JDoodle Requested Format
         const requestBody = {
-            clientId: "19f502d67b809bb3491c24a025bcef54", // Replace with your actual Client ID
-            clientSecret: "20b8c7fc700ea1e56ee3076675ca8bda7192ebd799aa5101a620728c27d30dd6", // Replace with your actual Client Secret
             script: sanitizedCode, // The Java code you want to execute
             stdin: "",
             language: "java",
