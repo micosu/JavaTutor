@@ -27,6 +27,9 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
     const correctAnswers = initialCorrectAnswers;
     const handleRun = async () => {
         // To preserve user answer order
+        // DELETE
+        console.log("User Inputs---------", userInputs);
+        console.log("Correct Answers--------", correctAnswers);
         const orderedKeys = Object.keys(userInputs).sort((a, b) => {
             const [aLine, aPart] = a.split("-").map(Number);
             const [bLine, bPart] = b.split("-").map(Number);
@@ -45,7 +48,7 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
         const isCorrect =
             userAnswers.length === correctAnswers.length &&
             userAnswers.every((answer, index) => answer === correctAnswers[index]);
-
+        console.log("isCorrect----------", isCorrect);
         // Store the attempt in the userInteractions collection
         await fetch(`${BASE_URL}/api/log-attempt`, {
             method: "POST",
