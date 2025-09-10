@@ -36,6 +36,8 @@ const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange 
             Object.keys(inputs).forEach((key, index) => {
                 const userAnswer = (inputs[key] || "").trim();
                 const correctAnswer = (correctAnswers[index] || "").trim();
+                console.log("userAnswer------", userAnswer);
+                console.log("correctAnswer------", correctAnswer);
 
                 updatedStyles[key] =
                     userAnswer === correctAnswer ? "4px solid #1cf306" : "4px solid red";
