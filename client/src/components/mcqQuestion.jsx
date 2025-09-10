@@ -5,7 +5,7 @@ import "../assets/css/tutor.css";
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
 // Props - options(option choices), correctAnswers(correct answers), question(question text), onReceiveFeedback(on recieving feedback), setIsTyping(typing loader)
-const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setIsTyping, studentId, moduleId, questionId }) => {
+const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setIsTyping, studentId, moduleId, questionId, setHasAttempted }) => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [isCorrect, setIsCorrect] = useState(null);
     const [feedback, setFeedback] = useState("");
@@ -44,6 +44,7 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
     const handleCheckAnswer = async () => {
 
         if (selectedOption !== null) {
+            if (setHasAttempted) setHasAttempted(true);
             const sessionId = localStorage.getItem("sessionId");
             const timestamp = new Date().toISOString();
 
@@ -97,6 +98,7 @@ const MCQOptions = ({ options, correctAnswers, question, onReceiveFeedback, setI
                         },
                         body: JSON.stringify({
                             problemStatement: question.problemStatement,
+                            code: question.code,
                             options: options,
                             userAnswer: selectedOption,
                             correctAnswers: correctAnswers,

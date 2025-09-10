@@ -23,6 +23,8 @@ const MCQPage = () => {
     ]);
     const [isTyping, setIsTyping] = useState(false);
 
+    const [hasAttempted, setHasAttempted] = useState(false);
+
     useEffect(() => {
         let storedStudentId = sessionStorage.getItem("studentId");
         const queryParams = new URLSearchParams(location.search);
@@ -70,6 +72,12 @@ const MCQPage = () => {
                 studentGroup
             }),
         });
+
+        if (!hasAttempted) {
+            alert("Attempt the problem before you ask for help!");
+            setIsTyping(false);
+            return;
+        } 
         // Logic for checking student questions to avoid gaming goes here
         const checkQuestion = async (message) => {
             try {
@@ -348,7 +356,7 @@ const MCQPage = () => {
                 <div className="leftPart">
                     <ProblemMCQ statement={question.problemStatement} />
                     <CodeDisplayMCQ code={question.code} />
-                    <MCQOptions options={question.options} correctAnswers={question.correctAnswer} question={question} onReceiveFeedback={handleMCQFeedback} setIsTyping={setIsTyping} studentId={studentId} moduleId={moduleId} questionId={questionId} />
+                    <MCQOptions options={question.options} correctAnswers={question.correctAnswer} question={question} onReceiveFeedback={handleMCQFeedback} setIsTyping={setIsTyping} studentId={studentId} moduleId={moduleId} questionId={questionId} setHasAttempted={setHasAttempted} />
                 </div>
                 <div className="rightPart">
                     <BotMCQ
