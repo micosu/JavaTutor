@@ -12,11 +12,19 @@ const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 // Props - onRunCode(callback to run the java code, setBotMessages(callback to add the debugging tutor response), setIsTyping(callback to set the loader state), initialCode(code to be displayed in the editor), problemStatement(problem statement), initialCorrectAnswers(correct answers), moduleId(module id), questionId(question id), studentId(student id))
 const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemStatement, initialCorrectAnswers, moduleId, questionId, studentId }) => {
     const [completedCode, setCompletedCode] = useState("");
-    const [userInputs, setUserInputs] = useState({}); // User answers from CodeDisplay
+    const [userInputs, setUserInputs] = useState(new Array(initialCorrectAnswers.length).fill('')); // User answers from CodeDisplay
     const [conversationHistory, setConversationHistory] = useState("")
     const [hintCounterFrontend, setHintCounter] = useState(0)
     const sessionId = localStorage.getItem("sessionId");
     const studentGroup = sessionStorage.getItem("studentGroup");
+
+    const updateInput = (index, value) => {
+            setUserInputs(prev => {
+                const newInputs = [...prev];
+                newInputs[index] = value;
+                return newInputs;
+            });
+        };
 
     const handleCodeChange = (fullCode) => {
         setCompletedCode(fullCode);
@@ -27,27 +35,15 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
     const correctAnswers = initialCorrectAnswers;
     const handleRun = async () => {
         // To preserve user answer order
-        // DELETE
         console.log("User Inputs---------", userInputs);
-        console.log("Correct Answers--------", correctAnswers);
-        const orderedKeys = Object.keys(userInputs).sort((a, b) => {
-            const [aLine, aPart] = a.split("-").map(Number);
-            const [bLine, bPart] = b.split("-").map(Number);
-            return aLine === bLine ? aPart - bPart : aLine - bLine;
-        });
-
-        const userAnswers = orderedKeys.map((key) => {
-            const answer = userInputs[key];
-            return typeof answer === "string" ? answer.trim() : answer;
-        });
 
         const codeDisplayValidation = document.getElementById("code-display-validation");
         codeDisplayValidation?.click();
 
-        // Validate user answers
-        const isCorrect =
-            userAnswers.length === correctAnswers.length &&
+        const userAnswers = userInputs.map(answer => answer.trim());
+        const isCorrect = userAnswers.length === correctAnswers.length && 
             userAnswers.every((answer, index) => answer === correctAnswers[index]);
+            
         console.log("isCorrect----------", isCorrect);
         // Store the attempt in the userInteractions collection
         await fetch(`${BASE_URL}/api/log-attempt`, {
@@ -171,7 +167,7 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
                     codeString={code}
                     onCodeChange={handleCodeChange}
                     correctAnswers={correctAnswers}
-                    onInputsChange={setUserInputs}
+                    onInputsChange={updateInput}
                 />
             </div>
             <p>If you're confident your answer is correct but it's marked wrong, try refreshing the page and submitting again. Also inform your professor about the Module ID and Question ID when this happens.</p>
