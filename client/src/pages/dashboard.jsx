@@ -144,6 +144,10 @@ const Dashboard = () => {
         fetchConsentStatus();
     }, [studentId]);
     const handleModuleClick = (index, module) => {
+        // If it's the consent form and consent is already given, do nothing
+        if (module.type === "test" && module.route === "/consent-form" && hasConsent) {
+            return; // Prevent navigation
+        }
         if (module.type === "test") {
             navigate(module.route); // Redirect for test modules
         } else {
@@ -326,9 +330,16 @@ const Dashboard = () => {
                         <div key={index}>
                             <div
                                 onClick={() => handleModuleClick(index, module)}
-                                className={`moduleButton ${!hasConsent && module.type !== "test" ? "disabled" : ""}`}
+                                className={`moduleButton ${
+                                    (!hasConsent && module.type !== "test") || 
+                                    (module.type === "test" && module.route === "/consent-form" && hasConsent)
+                                    ? "disabled" : ""
+                                }`}
                             >
-                                <ModuleName name={module.name} />
+                                <ModuleName 
+                                    name={module.name} 
+                                    isCompleted={module.type === "test" && module.route === "/consent-form" && hasConsent}
+                                />
                             </div>
 
                             {/* Show questions only when a module is clicked */}
