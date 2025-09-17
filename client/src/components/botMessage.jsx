@@ -3,6 +3,7 @@
 // Importing the required dependencies
 import React from "react";
 import botImage from "../assets/images/bot.svg"
+import ReactMarkdown from 'react-markdown';
 import '../assets/css/tutor.css'
 
 // Props - message returned by the API
@@ -14,7 +15,9 @@ const BotMessage = ({ message }) => {
             </div>
             <div className="bot-message-content">
                 <div className="tutorName inter-bold">Debugging Tutor</div>
-                <div className="message inter-regular">{message}</div>
+                <div className="message inter-regular">
+                    <ReactMarkdown>{message}</ReactMarkdown>
+                </div>
             </div>
         </div>
     );
