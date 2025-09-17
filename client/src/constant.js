@@ -118,8 +118,8 @@ public class SubtractionQuiz {
 
         // Prompt the user with the subtraction question
         System.out.print("What is " + number1 + " - " + number2 + "? ");
-        Scanner input = new Scanner(System.in);
-        int answer = input.________();
+        Scanner scan = new Scanner(System.in);
+        int answer = scan.________();
 
         // Check the answer
         if (answer == ________ - ________) {
@@ -129,7 +129,7 @@ public class SubtractionQuiz {
         }
 
         // Close the scanner
-        input.close();
+        scan.close();
     }
 }
 `,

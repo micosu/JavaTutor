@@ -33,22 +33,6 @@ export const tests = [
             },
             {
                 id: 3,
-                question: "What is the correct operator to replace ___ in the following condition so that it correctly checks if number is negative or greater than 100?",
-                code: `if (number < 0 ___ number > 100) {
-  System.out.println("The number is either negative or greater than 100.");
-}
-`,
-
-                options: [
-                    "&&",
-                    "!",
-                    "==",
-                    "||"
-                ],
-                answer: "||"
-            },
-            {
-                id: 4,
                 question: "What is the correct operator to replace ___ in the following condition so that it correctly checks if a student has passed with a score of 50 or higher?",
                 code: `if (score ___ 50) {
    System.out.println("The student has passed.");
@@ -66,12 +50,12 @@ export const tests = [
                 answer: ">="
             },
             {
-                id: 5,
+                id: 4,
                 question: "Which method should replace ________ to correctly read an integer input from the user?",
-                code: `Scanner input = new Scanner(System.in); 
+                code: `Scanner scan = new Scanner(System.in); 
 System.out.print("Enter a number: "); 
-int number = input.________(); 
-input.close();
+int number = scan.________(); 
+scan.close();
 `,
 
                 options: [
@@ -81,6 +65,22 @@ input.close();
                     "scanInt()"
                 ],
                 answer: "nextInt()"
+            },
+            {
+                id: 5,
+                question: "What is the correct operator to replace ___ in the following condition so that it checks if number is between 25 and 75 (exclusive)?",
+                code: `if (number > 25 ___ number < 75) {
+  System.out.println("The number is between 25 and 75.");
+}
+`,
+
+                options: [
+                    "^",
+                    "&&",
+                    "||",
+                    "!=="
+                ],
+                answer: "&&"
             },
         ]
 
@@ -257,12 +257,12 @@ Java Programming
                 id: 3,
                 question: "Why does the following loop not terminate, even when the user guesses the correct number?",
                 code: `int number = (int)(Math.random() * 101);
-Scanner input = new Scanner(System.in);
+Scanner scan = new Scanner(System.in);
 int guess = -1;
 
 while (true) {
     System.out.print("Enter your guess: ");
-    guess = input.nextInt();
+    guess = scan.nextInt();
 
     if (guess == number)
         System.out.println("Correct!");
@@ -284,11 +284,11 @@ while (true) {
                 question: "What will the following code output if the user enters 2, 3, and 0?",
                 code: `int sum = 0;
 int data;
-Scanner input = new Scanner(System.in);
+Scanner scan = new Scanner(System.in);
 
 do {
     System.out.print("Enter an integer (0 to stop): ");
-    data = input.nextInt();
+    data = scan.nextInt();
     sum += data;
 } while (data != 0);
 
@@ -305,23 +305,23 @@ System.out.println("The sum is " + sum);`,
                 id: 5,
                 question: "Convert the following while loop into a do-while loop:",
                 code: `int number = 0;
-Scanner input = new Scanner(System.in);
+Scanner scan = new Scanner(System.in);
 System.out.print("Enter a number (0 to stop): ");
-number = input.nextInt();
+number = scan.nextInt();
 
 while (number != 0) {
     System.out.println("You entered: " + number);
     System.out.print("Enter a number (0 to stop): ");
-    number = input.nextInt();
+    number = scan.nextInt();
 }
 `,
                 options: [
-                    "Place the input statement outside the loop.",
-                    "Place the input statement inside the do block before the condition.",
+                    "Place the scan statement outside the loop.",
+                    "Place the scan statement inside the do block before the condition.",
                     "Use while (true) for the condition.",
-                    "Use do-while syntax but leave the input statement outside."
+                    "Use do-while syntax but leave the scan statement outside."
                 ],
-                answer: "Place the input statement inside the do block before the condition."
+                answer: "Place the scan statement inside the do block before the condition."
             },
             {
                 id: 6,
@@ -462,11 +462,11 @@ while (count <= 3) {
                 question: "Why does the following code cause an infinite loop even after the correct number is guessed?",
                 code: `
                 int number = (int)(Math.random() * 101);
-Scanner input = new Scanner(System.in);
+Scanner scan = new Scanner(System.in);
 
 while (number != -1) {
     System.out.print("Enter your guess: ");
-    int guess = input.nextInt();
+    int guess = scan.nextInt();
 
     if (guess == number)
         System.out.println("Correct!");
@@ -487,12 +487,12 @@ while (number != -1) {
                 id: 4,
                 question: "What will the following code output if the user enters 5, 7, 2, and then 0?",
                 code: `int number, max;
-Scanner input = new Scanner(System.in);
-number = input.nextInt();
+Scanner scan = new Scanner(System.in);
+number = scan.nextInt();
 max = number;
 
 do {
-    number = input.nextInt();
+    number = scan.nextInt();
     if (number > max)
         max = number;
 } while (number != 0);
@@ -513,18 +513,18 @@ System.out.println("max is " + max);`,
 int sum = 0;
 while (data != 0) {
     System.out.print("Enter an integer (0 to stop): ");
-    data = input.nextInt();
+    data = scan.nextInt();
     sum += data;
 }
 System.out.println("The sum is " + sum);
 `,
                 options: [
-                    "Add the input statement inside the do block.",
+                    "Add the scan statement inside the do block.",
                     "Add the sum calculation after the condition.",
-                    "Use do syntax and place the input and sum calculation inside the block.",
+                    "Use do syntax and place the scan and sum calculation inside the block.",
                     "Use the do syntax but add the condition check outside."
                 ],
-                answer: "Use do syntax and place the input and sum calculation inside the block."
+                answer: "Use do syntax and place the scan and sum calculation inside the block."
             },
             {
                 id: 6,
