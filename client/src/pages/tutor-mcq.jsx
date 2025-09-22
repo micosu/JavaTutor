@@ -126,6 +126,8 @@ const MCQPage = () => {
                     role: msg.sender === "user" ? "user" : "assistant",
                     content: msg.text,
                 })),
+                code: question.code,
+                correctAnswers: [question.correctAnswer],
             };
 
             // In case the api takes a long time, we try a max of 3 times

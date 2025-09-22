@@ -288,6 +288,9 @@ const Tutor = () => {
                     role: msg.sender === "user" ? "user" : "assistant",
                     content: msg.text,
                 })),
+                code: question.code,
+                correctAnswers: question.correctAnswers,
+
             };
 
             // In case API times out, we retry max of 3 times

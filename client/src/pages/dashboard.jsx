@@ -14,6 +14,8 @@ import TestButton from "../components/testButton";
 import book from "../assets/images/book.svg"
 
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
+const CIT_STUDENTS = process.env.REACT_APP_CIT_STUDENTS || "";
+const BLOCKED_MODULES = process.env.REACT_APP_BLOCKED_MODULES || "";
 
 const modulesData = [
     {
@@ -73,7 +75,9 @@ const Dashboard = () => {
     const [showMessage, setShowMessage] = useState(true);
     const [successMessageTest, setSuccessMessageTest] = useState("");
     const [showMessageTest, setShowMessageTest] = useState(false);
-    const sessionId = localStorage.getItem("sessionId");
+    const rollNumber = sessionStorage.getItem("rollNumber");
+    const current_students = CIT_STUDENTS.split(",");
+    const blocked_modules = BLOCKED_MODULES.split(",");
 
     const timer = setTimeout(() => {
         setSuccessMessage((prev) => (prev ? "hidden" : ""));
@@ -145,8 +149,12 @@ const Dashboard = () => {
     }, [studentId]);
     const handleModuleClick = (index, module) => {
         // If it's the consent form and consent is already given, do nothing
+        console.log("rollNumber ------", rollNumber);
         if (module.type === "test" && module.route === "/consent-form" && hasConsent) {
             return; // Prevent navigation
+            // If the student is one of the CIT students, block modules they haven't gotten to yet
+        } else if (current_students.includes(rollNumber) && module.type === "module" && blocked_modules.some(mod => module.name.includes(mod))) {
+            return;
         }
         if (module.type === "test") {
             navigate(module.route); // Redirect for test modules
@@ -297,7 +305,6 @@ const Dashboard = () => {
         fetchStudentName();
     }, [studentId]);
 
-    console.log("Completed Questions:", completedQuestions);
     return (
         <div className="dashboard">
             <div className="sidePanelDiv">
@@ -332,7 +339,8 @@ const Dashboard = () => {
                                 onClick={() => handleModuleClick(index, module)}
                                 className={`moduleButton ${
                                     (!hasConsent && module.type !== "test") || 
-                                    (module.type === "test" && module.route === "/consent-form" && hasConsent)
+                                    (module.type === "test" && module.route === "/consent-form" && hasConsent) ||
+                                    (current_students.includes(rollNumber) && module.type === "module" && blocked_modules.some(mod => module.name.includes(mod)))
                                     ? "disabled" : ""
                                 }`}
                             >

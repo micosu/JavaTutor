@@ -128,7 +128,7 @@ const TestPage = () => {
             });
 
             const message = testType === "post-test"
-                ? `✅ Post-test submitted! You scored ${data.score}.`
+                ? `✅ Post-test submitted!`
                 : "✅ Pre-test submitted successfully!";
             sessionStorage.setItem("testSuccessMessage", message);
             localStorage.setItem("testSuccessMessage", message);
