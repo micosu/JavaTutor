@@ -150,6 +150,8 @@ const Dashboard = () => {
     const handleModuleClick = (index, module) => {
         // If it's the consent form and consent is already given, do nothing
         console.log("rollNumber ------", rollNumber);
+        console.log("students-------", current_students);
+        console.log("blocked modules-------", blocked_modules);
         if (module.type === "test" && module.route === "/consent-form" && hasConsent) {
             return; // Prevent navigation
             // If the student is one of the CIT students, block modules they haven't gotten to yet
