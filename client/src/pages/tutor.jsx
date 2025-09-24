@@ -22,6 +22,7 @@ const Tutor = () => {
     let studentId = queryParams.get("studentId") || sessionStorage.getItem("studentId");
 
     const [hasAttempted, setHasAttempted] = useState(false);
+    const [hasCompleted, setHasCompleted] = useState(false);
 
     useEffect(() => {
         if (!studentId) {
@@ -177,6 +178,7 @@ const Tutor = () => {
         } else {
             setOutput(result.output); // Display the output
             if (isCorrect) {
+                setHasCompleted(true);
                 setBotMessages((prevMessages) => [
                     ...prevMessages,
                     { sender: "bot", text: "Congratulations, you got the right answer and can move on! Press Done to store your progress." },
@@ -276,7 +278,7 @@ const Tutor = () => {
         }
 
 
-        const isGoodStudent = await checkQuestion(message);
+        const isGoodStudent =  hasCompleted || await checkQuestion(message);
 
 
         if (isGoodStudent) {
