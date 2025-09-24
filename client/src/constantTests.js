@@ -218,7 +218,7 @@ int value = scanner.________();
                 question: "What will the following code output?",
                 code: `int count = 0;
 while (count < 3) {
-    System.out.println("Java Programming");
+    System.out.print("Java Programming");
     count++;
 }`,
                 options: [
@@ -417,7 +417,7 @@ while (i < 5) {
                 question: "What will the following code output?",
                 code: `int count = 1;
 while (count <= 3) {
-    System.out.println(5);
+    System.out.print(5);
     count++;
 }`,
                 options: [

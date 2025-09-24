@@ -120,7 +120,9 @@ const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange 
                                     onChange={(e) => handleChange(position.blankIndex, e.target.value)}
                                     style={{
                                         display: "inline-block",
-                                        width: "50px",
+                                        width: `${Math.max((inputs[position.blankIndex] || "").length * 8 + 20, 50)}px`,
+                                        minWidth: "50px",
+                                        maxWidth: "200px", // Optional: prevent it from getting too wide
                                         margin: "0 5px",
                                         padding: "2px",
                                         fontSize: "14px",

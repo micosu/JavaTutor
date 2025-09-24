@@ -338,7 +338,7 @@ public class LoopVariableScope {
                 options: ["Remove the line System.out.println(`Final value of i: ` + i); as it is unnecessary.",
                     "Declare i outside the loop, like this: int i = 0; for (; i < 10; i++).",
                     "Use System.out.println(`Final value of i: ` + (i - 1)); to print the final loop value.",
-                    "Initialize i as a global variable outside the main method."],  // ✅ Multiple-choice options
+                    "Add public modifier: for (public int i = 0; i < 10; i++)."],  // ✅ Multiple-choice options
                 correctAnswer: "Declare i outside the loop, like this: int i = 0; for (; i < 10; i++)."
             },
 
@@ -487,7 +487,7 @@ public class PositiveNumberCheck {
             {
                 questionId: 4,
                 headerTopic: "Methods",
-                problemStatement: "Write a Java program that defines a maximum function which returns the maximum number from two numbers given as a parameter",
+                problemStatement: "Write a Java program that defines a maximum function which returns the maximum number from two numbers given as parameters.  If the two numbers are equal, you should return the first paramter.",
                 input: "10 20",
                 output: "The maximum number is: 20",
                 code: `public class MaximumFinder {
@@ -507,7 +507,7 @@ public class PositiveNumberCheck {
         System.out.println("The maximum number is: " + result);
     }
 }`,
-                correctAnswers: ["num1", ">", "num2", "num2", "maximum"]
+                correctAnswers: ["num1", ">=", "num2", "num2", "maximum"]
             },
             {
                 questionId: 5,

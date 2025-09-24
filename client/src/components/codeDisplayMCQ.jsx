@@ -5,7 +5,7 @@ import React from "react";
 const CodeDisplayMCQ = ({ code }) => {
     return (
         <div className="codeDisplayMCQ" onContextMenu={(e) => e.preventDefault()} >
-            <pre>
+            <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
                 <code>{code}</code>
             </pre>
         </div>
