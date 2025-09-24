@@ -31,19 +31,19 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
     };
 
     const code = initialCode;
-
-    const correctAnswers = initialCorrectAnswers;
+    const correctAnswers = initialCorrectAnswers.map(answer => answer.replace(/\s+/g, ''));
     const handleRun = async () => {
         // To preserve user answer order
         console.log("User Inputs---------", userInputs);
 
         const codeDisplayValidation = document.getElementById("code-display-validation");
         codeDisplayValidation?.click();
-
-        const userAnswers = userInputs.map(answer => answer.trim());
+        // Note: this find and replace only works if the answer doesn't need any spaces within it
+        const userAnswers = userInputs.map(answer => answer.replace(/\s+/g, ''));
+        // const correctAnswers = initialCorrectAnswers.map(answer => answer.replace(/\s+/g, ''));
         const isCorrect = userAnswers.length === correctAnswers.length && 
             userAnswers.every((answer, index) => answer === correctAnswers[index]);
-            
+
         console.log("isCorrect----------", isCorrect);
         // Store the attempt in the userInteractions collection
         await fetch(`${BASE_URL}/api/log-attempt`, {
