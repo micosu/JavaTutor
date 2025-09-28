@@ -2,7 +2,7 @@
 export const tests = [
     {
         id: "pre-test-1",
-        title: "Pre-Test Control Structures",
+        title: "Control Structures",
         questions: [
             {
                 id: 1,
@@ -88,7 +88,7 @@ scan.close();
 
     {
         id: "post-test-1",
-        title: "Post-Test Control Structures",
+        title: "Control Structures",
         questions: [
             {
                 id: 1,
@@ -211,7 +211,7 @@ int value = scanner.________();
     },
     {
         id: "pre-test-2",
-        title: "Pre-Test Loops",
+        title: "Loops",
         questions: [
             {
                 id: 1,
@@ -410,7 +410,7 @@ while (i < 5) {
 
     {
         id: "post-test-2",
-        title: "Post-Test Loops",
+        title: "Loops",
         questions: [
             {
                 id: 1,
@@ -613,7 +613,7 @@ while (i < 5) {
 
     {
         id: "pre-test-3",
-        title: "Pre Test Methods",
+        title: "Methods",
         questions: [
             {
                 id: 1,
@@ -710,7 +710,7 @@ while (i < 5) {
     },
     {
         id: "post-test-3",
-        title: "Post Test Methods",
+        title: "Methods",
         questions: [
             {
                 id: 1,

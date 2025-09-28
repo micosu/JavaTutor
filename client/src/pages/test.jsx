@@ -5,12 +5,17 @@ import { useParams } from "react-router-dom";
 import { tests } from "../constantTests";
 import "../assets/css/test.css";
 
-const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+const COUNTERBALANCED_STUDENTS = process.env.REACT_APP_COUNTERBALANCED || "";
 const TestPage = () => {
     const { moduleId } = useParams();
     const searchParams = new URLSearchParams(window.location.search);
     const studentId = searchParams.get("studentId");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const counter_balanced = COUNTERBALANCED_STUDENTS.split(",");
+    const rollNumber = sessionStorage.getItem("rollNumber");
+    const isCounterBalanced = counter_balanced.includes(rollNumber);
+    console.log("CB? ", isCounterBalanced);
     const moduleNames = {
         "1": "Control Structures",
         "2": "Loops",
@@ -19,11 +24,13 @@ const TestPage = () => {
 
     const moduleName = moduleNames[moduleId] || "this module"; // fallback if not found
 
-    // Determine if it's a pre-test or post-test
+    // testType: the actual placement of the test.  Tells you if student took this test at the beginning or end of the module
     const testType = window.location.pathname.includes("pre-test") ? "pre-test" : "post-test";
+    // balancedTestType: the actual test given to students.  If in counter-balanced group, they see the post-test as their pre-test
+    const balancedTestType = isCounterBalanced && testType === "pre-test" ? "post-test" : "pre-test";
 
     // Find the corresponding test
-    const test = tests.find((t) => t.id === `${testType}-${moduleId}`);
+    const test = tests.find((t) => t.id === `${balancedTestType}-${moduleId}`);
 
     const [answers, setAnswers] = useState({});
     const [reflectionResponse, setReflectionResponse] = useState("");
@@ -65,7 +72,8 @@ const TestPage = () => {
                 isCorrect,
                 timestamp,
                 studentGroup,
-                testType
+                testType,
+                balancedTestType
             }),
         });
 
@@ -94,6 +102,7 @@ const TestPage = () => {
                 body: JSON.stringify({
                     studentId,
                     testType,
+                    balancedTestType,
                     title: moduleId,
                     answers,
                     correctAnswers,
@@ -118,6 +127,7 @@ const TestPage = () => {
                     moduleId,
                     eventType: "test-submit",
                     testType,
+                    balancedTestType,
                     userAnswers: answers,
                     correctAnswers,
                     reflectionResponse: testType === "post-test" ? reflectionResponse : null,
@@ -129,7 +139,7 @@ const TestPage = () => {
 
             const message = testType === "post-test"
                 ? `✅ Post-test submitted!`
-                : "✅ Pre-test submitted successfully!";
+                : `✅ Pre-test submitted successfully!`;
             sessionStorage.setItem("testSuccessMessage", message);
             localStorage.setItem("testSuccessMessage", message);
             setTimeout(() => {
@@ -151,7 +161,7 @@ const TestPage = () => {
         </div >
     ) : (
         <div className="test-container">
-            <h1 className="test-title">{test.title}</h1>
+            <h1 className="test-title">{testType === "pre-test" ? "Pre-Test " : "Post-Test "} {test.title}</h1>
         
             {test.questions.map((q) => (
                 <div key={q.id} className="question-card">
