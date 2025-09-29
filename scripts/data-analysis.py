@@ -86,7 +86,7 @@ for student in students:
         answers = test.get("answers", {})
         answers_str = json.dumps(answers) if isinstance(answers, dict) else str(answers)
         if answers:
-            form = test.get("balancedTestType", test_key)
+            form = test.get("testForm", test_key)
             if form[-1] not in "123":
                 form += test_key[-2:]
         else:

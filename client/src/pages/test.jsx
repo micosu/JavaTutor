@@ -26,11 +26,11 @@ const TestPage = () => {
 
     // testType: the actual placement of the test.  Tells you if student took this test at the beginning or end of the module
     const testType = window.location.pathname.includes("pre-test") ? "pre-test" : "post-test";
-    // balancedTestType: the actual test given to students.  If in counter-balanced group, they see the post-test as their pre-test
-    const balancedTestType = isCounterBalanced && testType === "pre-test" ? "post-test" : "pre-test";
+    // testForm: the actual test given to students.  If in counter-balanced group, they see the post-test as their pre-test
+    const testForm = isCounterBalanced ? (testType === "pre-test" ? "post-test" : "pre-test") : testType;
 
     // Find the corresponding test
-    const test = tests.find((t) => t.id === `${balancedTestType}-${moduleId}`);
+    const test = tests.find((t) => t.id === `${testForm}-${moduleId}`);
 
     const [answers, setAnswers] = useState({});
     const [reflectionResponse, setReflectionResponse] = useState("");
@@ -73,7 +73,7 @@ const TestPage = () => {
                 timestamp,
                 studentGroup,
                 testType,
-                balancedTestType
+                testForm
             }),
         });
 
@@ -102,7 +102,7 @@ const TestPage = () => {
                 body: JSON.stringify({
                     studentId,
                     testType,
-                    balancedTestType,
+                    testForm,
                     title: moduleId,
                     answers,
                     correctAnswers,
@@ -127,7 +127,7 @@ const TestPage = () => {
                     moduleId,
                     eventType: "test-submit",
                     testType,
-                    balancedTestType,
+                    testForm,
                     userAnswers: answers,
                     correctAnswers,
                     reflectionResponse: testType === "post-test" ? reflectionResponse : null,
