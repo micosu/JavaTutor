@@ -1,14 +1,24 @@
 # Import necessary libraries
+import certifi
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-from pymongo import MongoClient
+import os
+
 from bson.objectid import ObjectId
 from datetime import datetime
+from dotenv import load_dotenv
+from oauth2client.service_account import ServiceAccountCredentials
+from pymongo import MongoClient
+
+load_dotenv()
+
+# Initialize Variables
+MONGODB_URI = os.getenv("MONGODB_URI")
+ROLL_NUMBERS = os.getenv("ROLL_NUMBERS", "").split(",")
+SHEET_NAME = "Data Analysis - Java Tutor"
 
 # === MongoDB Setup ===
-mongo_uri = 'mongodb+srv://dmondhe:FOW25Java@cluster0.i7tisuz.mongodb.net/FOW?retryWrites=true&w=majority&appName=Cluster0'
-client = MongoClient(mongo_uri)
-db = client['FOW']
+mongo_client = MongoClient(MONGODB_URI, tlsCAFile=certifi.where())
+db = mongo_client["FOW"]
 user_collection = db['userInteractions']
 test_collection = db['testInteractions']
 
@@ -17,11 +27,11 @@ scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/au
 creds = ServiceAccountCredentials.from_json_keyfile_name("fow-data-analysis.json", scope)
 gc = gspread.authorize(creds)
 
-spreadsheet = gc.open("Data Analysis - Java Tutor")
+spreadsheet = gc.open(SHEET_NAME)
 try:
-    sheet = spreadsheet.worksheet("Sheet4")
+    sheet = spreadsheet.worksheet("Interactions")
 except gspread.exceptions.WorksheetNotFound:
-    sheet = spreadsheet.add_worksheet(title="Sheet2", rows="1000", cols="30")
+    sheet = spreadsheet.add_worksheet(title="Interactions", rows="1000", cols="30")
 
 # === Combined header fields ===
 all_fields = [

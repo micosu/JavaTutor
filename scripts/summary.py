@@ -1,14 +1,24 @@
 # Import necessary libraries
+import certifi
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-from pymongo import MongoClient
+import os
+
 from bson.objectid import ObjectId
 from datetime import datetime
+from dotenv import load_dotenv
+from oauth2client.service_account import ServiceAccountCredentials
+from pymongo import MongoClient
+
+load_dotenv()
+
+# Initialize Variables
+MONGODB_URI = os.getenv("MONGODB_URI")
+ROLL_NUMBERS = os.getenv("ROLL_NUMBERS", "").split(",")
+SHEET_NAME = "Data Analysis - Java Tutor"
 
 # === MongoDB Setup ===
-mongo_uri = 'mongodb+srv://dmondhe:FOW25Java@cluster0.i7tisuz.mongodb.net/FOW?retryWrites=true&w=majority&appName=Cluster0'
-client = MongoClient(mongo_uri)
-db = client['FOW']
+mongo_client = MongoClient(MONGODB_URI, tlsCAFile=certifi.where())
+db = mongo_client["FOW"]
 collection = db["students"]
 
 
@@ -18,23 +28,21 @@ creds = ServiceAccountCredentials.from_json_keyfile_name("fow-data-analysis.json
 gc = gspread.authorize(creds)
 
 # Open the Google Sheet
-spreadsheet = gc.open("Data Analysis - Java Tutor")
+spreadsheet = gc.open(SHEET_NAME)
 
 try:
-    sheet = spreadsheet.worksheet("Sheet5")
+    sheet = spreadsheet.worksheet("Summary")
 except gspread.exceptions.WorksheetNotFound:
-    sheet = spreadsheet.add_worksheet(title="Sheet5", rows="1000", cols="30")
-
-# === Only check for students in the study ===
-allowed_roll_numbers = ["CleverMongoose77", "CharmingKoala13", "PeppyRaven91", "WittyHedgehog8", "HappyRaven12", "DaringHawk70", "FriendlyRabbit11", "BrightOtter98" , "LuckyRaven51" , "JollyFox19", "LuckyBeaver67", "SunnyFalcon55", "JollyCheetah32" ,"ZestyOwl65", "QuickFox39", "ZippyBluejay6", "VibrantRaven19", "CleverHedgehog12", "dhruvi2"]  # <-- your list here
+    sheet = spreadsheet.add_worksheet(title="Summary", rows="1000", cols="30")
 
 # === Get students from MongoDB ===
-students = collection.find({"rollNumber": {"$in": allowed_roll_numbers}})
+students = collection.find({"rollNumber": {"$in": ROLL_NUMBERS}})
 
 # === All headers for the Google Sheet ===
 headers = ["Name", "Roll Number", "Total Number of Completed Questions", "Module 1", "Module 2", "Module 3"]
 
 # === Clear the sheet and add headers ===
+sheet.clear()
 sheet.append_row(headers)
 
 # === Write data to Google Sheet ===
@@ -46,9 +54,9 @@ for student in students:
     module_counts = {1: 0, 2: 0, 3: 0}
     for i in range(1, len(completed_questions)):
         item = completed_questions[i]
-        print(item)
+        # print(item)
         module_id = int(item.get("moduleId", ""))
-        print(module_id)
+        # print(module_id)
         if module_id in module_counts:
             module_counts[module_id] += 1
 
