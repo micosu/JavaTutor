@@ -69,7 +69,7 @@ MONGODB_URI=mongodb+srv://<user>:<password>@cluster0.i7tisuz.mongodb.net/FOW?ret
 ROLL_NUMBERS=rollnumber1,rollnumber2,etc
 ```
 
-Where <user> and <password> are from your mongodb account, and rollnumber1,rollnumber2,etc are the Roll Numbers for the accounts of students in the study.
+Where "<user>" and "<password>" are from your mongodb account, and rollnumber1,rollnumber2,etc are the Roll Numbers for the accounts of students in the study.
 
 With this, you should be fully ready to run the scripts!
 
@@ -88,5 +88,7 @@ python fileName.py
 Where fileName.py is any of the script files.
 
 data-analysis.py ~ general information about each user: Roll Number, Consent Form Status, Number of Questions Completed, Test Scores, etc
+
 summary.py ~ information about number of questions each user completed from each module
+
 userInteractions.py ~ all logged user interactions from the tutor and the test

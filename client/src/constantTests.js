@@ -116,27 +116,27 @@ scan.close();
                 ],
                 answer: "if (number >= 5 && number <= 20)"
             },
+//             {
+//                 id: 3,
+//                 question: "In the following program, what should replace the first blank (___) to correctly check if a number is positive?",
+//                 code: `if (number > ___) {
+//    if (number % 2 == 0) {
+//        System.out.println("The number is positive and even.");
+//    } else {
+//        System.out.println("The number is positive and odd.");
+//    }
+// }
+// `,
+//                 options: [
+//                     "1",
+//                     "0",
+//                     "-1",
+//                     "null"
+//                 ],
+//                 answer: "0"
+//             },
             {
                 id: 3,
-                question: "In the following program, what should replace the first blank (___) to correctly check if a number is positive?",
-                code: `if (number > ___) {
-   if (number % 2 == 0) {
-       System.out.println("The number is positive and even.");
-   } else {
-       System.out.println("The number is positive and odd.");
-   }
-}
-`,
-                options: [
-                    "1",
-                    "0",
-                    "-1",
-                    "null"
-                ],
-                answer: "0"
-            },
-            {
-                id: 4,
                 question: "Which logical operator should be used in the following Java condition to check if a temperature is below freezing (less than 0) or extremely hot (above 100)?",
                 code: `if (temperature < 0 ___ temperature > 100) {
    System.out.println("Warning: Extreme temperature detected.");
@@ -153,7 +153,7 @@ scan.close();
                 answer: "||"
             },
             {
-                id: 5,
+                id: 4,
                 question: "Which relational operator should be used in the following condition to determine if a person is eligible to vote, assuming the minimum voting age is 18?",
                 code: `if (age ___ 18) {
    System.out.println("You are eligible to vote.");
@@ -170,7 +170,7 @@ scan.close();
                 answer: ">="
             },
             {
-                id: 6,
+                id: 5,
                 question: "You need to read an integer input from the user in a Java program. Which method should be used in the following code?",
                 code: `Scanner scanner = new Scanner(System.in);
 int value = scanner.________();
@@ -183,30 +183,30 @@ int value = scanner.________();
                 ],
                 answer: "nextInt()"
             },
-            {
-                id: 7,
-                question: "Fill in the blank to complete the Java program that checks if a number is positive, negative, or zero.",
-                code: `public class NumberCheck {
-   public static void main(String[] args) {
-       int number = -3;
+//             {
+//                 id: 7,
+//                 question: "Fill in the blank to complete the Java program that checks if a number is positive, negative, or zero.",
+//                 code: `public class NumberCheck {
+//    public static void main(String[] args) {
+//        int number = -3;
 
-       if (number > 0) {
-           System.out.println("The number is positive.");
-       } else if (number < ___) {
-           System.out.println("The number is negative.");
-       } else {
-           System.out.println("The number is zero.");
-       }
-   }
-`,
-                options: [
-                    "1",
-                    "0",
-                    "-1",
-                    "null"
-                ],
-                answer: "0"
-            },
+//        if (number > 0) {
+//            System.out.println("The number is positive.");
+//        } else if (number < ___) {
+//            System.out.println("The number is negative.");
+//        } else {
+//            System.out.println("The number is zero.");
+//        }
+//    }
+// `,
+//                 options: [
+//                     "1",
+//                     "0",
+//                     "-1",
+//                     "null"
+//                 ],
+//                 answer: "0"
+//             },
         ]
     },
     {
