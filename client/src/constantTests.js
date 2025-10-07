@@ -564,14 +564,14 @@ do {
             },
             {
                 id: 7,
-                question: "What is the key difference between a pretest loop and a posttest loop?",
+                question: "What is the key difference between a while loop and a do-while loop?",
                 options: [
-                    "A pretest loop executes the loop body at least once, while a posttest loop may not execute the loop body at all.",
-                    "A pretest loop checks the condition before the loop body executes, while a posttest loop checks it after.",
-                    "A pretest loop always has an empty body, while a posttest loop does not.",
+                    "A while loop executes the loop body at least once, but a do-while loop may not execute the loop body at all.",
+                    "A while loop checks the condition before the loop body executes, but a do-while loop checks it after.",
+                    "A while loop always has an empty body, but a do-while loop does not.",
                     "There is no difference; they are the same."
                 ],
-                answer: "A pretest loop checks the condition before the loop body executes, while a posttest loop checks it after."
+                answer: "A while loop checks the condition before the loop body executes, while a do-while loop checks it after."
             },
             {
                 id: 8,
