@@ -14,6 +14,8 @@ import TestButton from "../components/testButton";
 import book from "../assets/images/book.svg"
 
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
+const CIT_STUDENTS = process.env.REACT_APP_CIT_STUDENTS || "";
+const BLOCKED_MODULES = process.env.REACT_APP_BLOCKED_MODULES || "";
 
 const modulesData = [
     {

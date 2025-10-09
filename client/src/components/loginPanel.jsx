@@ -30,13 +30,14 @@ const LoginPanel = () => {
                 sessionStorage.setItem('studentId', data.user._id);
                 sessionStorage.setItem('studentGroup', data.user.type);
                 sessionStorage.setItem('rollNumber', rollNumber);
+                navigate(`/home?studentId=${data.user._id}`);
 
-                if (data.user.type == "test") {
-                    navigate(`/home?studentId=${data.user._id}`);
-                }
-                else if (data.user.type == "control") {
-                    navigate(`/dashboard?studentId=${data.user._id}`);
-                }
+                // if (data.user.type == "test") {
+                    
+                // }
+                // else if (data.user.type == "control") {
+                //     navigate(`/dashboard?studentId=${data.user._id}`);
+                // }
 
             } else {
                 setError(data.message || 'Invalid Unique ID');

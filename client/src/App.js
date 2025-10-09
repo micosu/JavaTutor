@@ -51,7 +51,7 @@ function App() {
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/home" element={<Dashboard />} />
-      <Route path="/dashboard" element={<DashboardControl />} />
+      {/* <Route path="/dashboard" element={<DashboardControl />} /> */}
       <Route path="/pre-test/:moduleId" element={<TestPage />} />  {/* ✅ Fix: Change hyphen to / */}
       <Route path="/post-test/:moduleId" element={<TestPage />} /> {/* ✅ Fix: Change hyphen to / */}
       <Route path="/tutor/:moduleId/:questionId" element={<Tutor />} />
