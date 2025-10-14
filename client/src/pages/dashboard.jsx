@@ -193,7 +193,7 @@ const Dashboard = () => {
                     throw new Error("Failed to fetch test progress");
                 }
                 const progressData = await response.json();
-                console.log("Student test progress:", progressData.tests);
+                // console.log("Student test progress:", progressData.tests);
 
                 // ✅ Create an object tracking pre-test completion for each module
                 const preTestStatus = {};
@@ -343,7 +343,7 @@ const Dashboard = () => {
                                 className={`moduleButton ${
                                     (!hasConsent && module.type !== "test") || 
                                     (module.type === "test" && module.route === "/consent-form" && hasConsent) ||
-                                    (current_students.includes(rollNumber) && module.type === "module" && blocked_modules.some(mod => module.name.includes(mod)))
+                                    (current_students.includes(studentId) && module.type === "module" && blocked_modules.some(mod => module.name.includes(mod)))
                                     ? "disabled" : ""
                                 }`}
                             >
