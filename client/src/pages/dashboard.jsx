@@ -367,7 +367,7 @@ const Dashboard = () => {
                                             questionId={qIndex + 1}
                                             question={question}
                                             type={studentGroup}
-                                            isDisabled={!preTestCompleted[index]}
+                                            isDisabled={!preTestCompleted[index] || index > 1} // Additional check to avoid future questions
                                             onQuestionComplete={() => handleQuestionCompletion(index, qIndex + 1)}
 
                                         />
