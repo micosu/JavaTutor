@@ -66,7 +66,7 @@ export const modules = [
 }
 
 `,
-                correctAnswers: ["false", ">=", "hasStudentID"]
+                correctAnswers: ["false", ">=", "hasStudentID|#|hasStudentID == true"]
             },
             {
                 questionId: 4,

@@ -64,8 +64,8 @@ const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange 
                         const key = `${lineIndex}-${partIndex}`;
                         const userAnswer = (inputs[blankIndex] || "").replace(/\s+/g, '');
                         const correctAnswer = (correctAnswers[blankIndex] || ""); // don't need to replace white spaces because that's done in editor.jsx
-                        
-                        updatedStyles[key] = userAnswer === correctAnswer ? "4px solid #1cf306" : "4px solid red";
+                        const options = correctAnswer.split("|#|");
+                        updatedStyles[key] = options.includes(userAnswer) ? "4px solid #1cf306" : "4px solid red";
                         blankIndex++;
                     }
                 });

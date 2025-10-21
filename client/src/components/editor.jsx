@@ -42,7 +42,9 @@ const Editor = ({ onRunCode, setBotMessages, setIsTyping, initialCode, problemSt
         const userAnswers = userInputs.map(answer => answer.replace(/\s+/g, ''));
         // const correctAnswers = initialCorrectAnswers.map(answer => answer.replace(/\s+/g, ''));
         const isCorrect = userAnswers.length === correctAnswers.length && 
-            userAnswers.every((answer, index) => answer === correctAnswers[index]);
+                userAnswers.every((answer, index) => 
+                correctAnswers[index].split("|#|").includes(answer)
+        );
 
         console.log("isCorrect----------", isCorrect);
         // Store the attempt in the userInteractions collection
