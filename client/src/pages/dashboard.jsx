@@ -154,7 +154,7 @@ const Dashboard = () => {
         if (module.type === "test" && module.route === "/consent-form" && hasConsent) {
             return; // Prevent navigation
             // If the student is one of the CIT students, block modules they haven't gotten to yet
-        } else if (["Module 2", "Module 3"].some(mod => module.name.includes(mod))) {
+        } else if (["Module 3"].some(mod => module.name.includes(mod))) {
             return;
         }
         if (module.type === "test") {
@@ -343,7 +343,7 @@ const Dashboard = () => {
                                 className={`moduleButton ${
                                     (!hasConsent && module.type !== "test") || 
                                     (module.type === "test" && module.route === "/consent-form" && hasConsent) ||
-                                    (["Module 2", "Module 3"].some(mod => module.name.includes(mod)))
+                                    (["Module 3"].some(mod => module.name.includes(mod)))
                                     ? "disabled" : ""
                                 }`}
                             >
