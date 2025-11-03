@@ -50,7 +50,7 @@ students = collection.find({"rollNumber": {"$in": ROLL_NUMBERS}})
 sheet.clear()
 # Optional: add header row to the Google Sheet
 headers = [
-    "Roll Number", "Type", "Consent Form", "Participation",
+    "Roll Number", "Student ID", "Type", "Consent Form", "Participation",
     "Number of Completed Questions", "Number of AI Conversations",
     "Completed Questions", "Conversations",
     "PreTest1 Raw Score", "PreTest1 Score", "PreTest1 Answers", "PreTest1 Form",
@@ -97,6 +97,7 @@ for student in students:
     row = [
         # student.get("name", ""), # No name for privacy reasons
         student.get("rollNumber", ""),
+        str(student.get("_id","")),
         student.get("type", ""),
         student.get("consentForm", ""),
         student.get("consentData", {}).get("participate", ""),

@@ -39,7 +39,7 @@ except gspread.exceptions.WorksheetNotFound:
 students = collection.find({"rollNumber": {"$in": ROLL_NUMBERS}})
 
 # === All headers for the Google Sheet ===
-headers = ["Name", "Roll Number", "Total Number of Completed Questions", "Module 1", "Module 2", "Module 3"]
+headers = ["Roll Number", "Total Number of Completed Questions", "Module 1", "Module 2", "Module 3"]
 
 # === Clear the sheet and add headers ===
 sheet.clear()
@@ -48,7 +48,7 @@ sheet.append_row(headers)
 # === Write data to Google Sheet ===
 for student in students:
     completed_questions = student.get("completedQuestions", [])
-    completed_questions_count = 0 if len(completed_questions) <= 1 else len(completed_questions)
+    completed_questions_count = 0 if len(completed_questions) <= 1 else len(completed_questions) - 1
 
     # Count completed questions per module
     module_counts = {1: 0, 2: 0, 3: 0}
@@ -62,7 +62,6 @@ for student in students:
 
     # Prepare the row data
     row = [
-        student.get("name", ""),
         student.get("rollNumber", ""),
         completed_questions_count,
         module_counts[1],

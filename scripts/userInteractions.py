@@ -21,6 +21,12 @@ mongo_client = MongoClient(MONGODB_URI, tlsCAFile=certifi.where())
 db = mongo_client["FOW"]
 user_collection = db['userInteractions']
 test_collection = db['testInteractions']
+student_collection = db["students"]
+
+students = student_collection.find({"rollNumber": {"$in": ROLL_NUMBERS}})
+IDS_TO_ROLL = {str(student.get("_id","")): student.get("rollNumber", "") for student in students}
+# print(IDS_TO_ROLL)
+# print(IDS_TO_ROLL.keys())
 
 # === Google Sheets Setup ===
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
@@ -35,7 +41,7 @@ except gspread.exceptions.WorksheetNotFound:
 
 # === Combined header fields ===
 all_fields = [
-    'Transaction ID', 'sessionID', 'studentID', 'studentGroup', 'timestamp', 'moduleID',
+    'Roll Number', 'Transaction ID', 'sessionID', 'studentID', 'studentGroup', 'timestamp', 'moduleID',
     'questionID','problemName',  'eventType', 'isCorrect', 'userAnswers', 'correctAnswers',
     'userAnswerIndex', 'userAnswerText', 'correctAnswerIndex', 'correctAnswerText','answer', 
     'message', 'testType', 'reflectionResponse', 'score', 
@@ -50,6 +56,7 @@ def format_doc(doc):
     row['Transaction ID'] = str(doc.get('_id', ''))
     row['sessionID'] = doc.get('sessionId', '')
     row['studentID'] = doc.get('studentId', '')
+    row['Roll Number'] = IDS_TO_ROLL[row['studentID']]
     row['studentGroup'] = doc.get('studentGroup', '')
     ts = doc.get('timestamp', '')
     if isinstance(ts, datetime):
@@ -122,14 +129,16 @@ if not sheet.row_values(1):
 new_rows = []
 for doc in user_collection.find():
     transaction_id = str(doc['_id'])
-    if transaction_id not in existing_ids:
+    student_id = doc['studentId']
+    if transaction_id not in existing_ids and student_id in IDS_TO_ROLL:
         new_rows.append(format_doc(doc))
         existing_ids.add(transaction_id)
 
 # === Collect and append new rows from testInteractions ===
 for doc in test_collection.find():
     transaction_id = str(doc['_id'])
-    if transaction_id not in existing_ids:
+    student_id = doc['studentId']
+    if transaction_id not in existing_ids and student_id in IDS_TO_ROLL:
         new_rows.append(format_doc(doc))
         existing_ids.add(transaction_id)
 

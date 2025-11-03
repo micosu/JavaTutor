@@ -737,6 +737,26 @@ while (i < 5) {
             {
                 id: 3,
                 question: "Which of the following statements correctly demonstrates the difference between invoking printGrade(78.5) and getGrade(78.5)?",
+                code: `// Method to get letter grade based on numeric score
+public static char getGrade(int score) {
+    if (score >= 90 && score <= 100) {
+        return 'A';
+    } else if (score >= 80 && score < 90) {
+        return 'B';
+    } else if (score >= 70 && score < 80) {
+        return 'C';
+    } else if (score >= 60 && score < 70) {
+        return 'D';
+    } else {
+        return 'F';
+    }
+}
+
+// Method to print the numeric score and corresponding grade
+public static void printGrade(int score) {
+    char grade = getGrade(score);
+    System.out.println("The score of " + score + " has a grade of " + grade);
+}`,
                 options: [
                     "printGrade(78.5); is a statement, while getGrade(78.5) can be used in expressions.",
                     "Both must be invoked as statements.",
