@@ -154,9 +154,9 @@ const Dashboard = () => {
         if (module.type === "test" && module.route === "/consent-form" && hasConsent) {
             return; // Prevent navigation
             // If the student is one of the CIT students, block modules they haven't gotten to yet
-        } else if (["Module 3"].some(mod => module.name.includes(mod))) {
-            return;
-        }
+        } // else if (["Module 3"].some(mod => module.name.includes(mod))) {
+            // return;
+        // }
         if (module.type === "test") {
             navigate(module.route); // Redirect for test modules
         } else {
@@ -342,8 +342,8 @@ const Dashboard = () => {
                                 onClick={() => handleModuleClick(index, module)}
                                 className={`moduleButton ${
                                     (!hasConsent && module.type !== "test") || 
-                                    (module.type === "test" && module.route === "/consent-form" && hasConsent) ||
-                                    (["Module 3"].some(mod => module.name.includes(mod)))
+                                    (module.type === "test" && module.route === "/consent-form" && hasConsent) // ||
+                                    // (["Module 3"].some(mod => module.name.includes(mod)))
                                     ? "disabled" : ""
                                 }`}
                             >
@@ -367,7 +367,7 @@ const Dashboard = () => {
                                             questionId={qIndex + 1}
                                             question={question}
                                             type={studentGroup}
-                                            isDisabled={!preTestCompleted[index] || index > 2} // Additional check to avoid future questions
+                                            isDisabled={!preTestCompleted[index]}
                                             onQuestionComplete={() => handleQuestionCompletion(index, qIndex + 1)}
 
                                         />
