@@ -325,9 +325,21 @@ const Dashboard = () => {
 
 
                 <Name name={studentName} />
-                <IntroBlock title="Java Tutor" content={studentType == "test" ? "The Java Tutor can give you adaptive feedback and run your code in the environment. You can also chat with the tutor to ask for more hints and feedback!": 
-                                                                                "The Java Tutor provides feedback by indicating whether your answer is correct or incorrect. If you are stuck, you can check the correct answer, but no additional hints or explanations are provided."}
-                                                                                 />
+                <IntroBlock 
+                    title="Java Tutor" 
+                    content={
+                        <>
+                        <strong style={{fontSize: 20 + "px", color: "blue"}}>You should currently be able to access all modules and questions.</strong>
+                        <br/>
+                        {studentType == "test" 
+                            ? "The Java Tutor can give you adaptive feedback and run your code in the environment. You can also chat with the tutor to ask for more hints and feedback!"
+                            : "The Java Tutor provides feedback by indicating whether your answer is correct or incorrect. If you are stuck, you can check the correct answer, but no additional hints or explanations are provided."
+                        }
+                        <br/>
+                        {" If you run into any issues, please let your instructor know!"}
+                        </>
+                    }
+                    />
                 <div className="modulesTitle">
                     <div className="bookIcon"><img src={book} alt="book" /></div>
                     <div>
