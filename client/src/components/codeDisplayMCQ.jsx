@@ -10,7 +10,11 @@ const CodeDisplayMCQ = ({ code }) => {
             const isComment = line.trimStart().startsWith("//");
             
             return (
-                <div key={index} style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+                <div key={index} style={{ 
+                    whiteSpace: 'pre-wrap', 
+                    wordBreak: 'break-word',
+                    overflowWrap: 'break-word'
+                }}>
                     <span style={{ color: isComment ? '#4CAF50' : 'inherit' }}>
                         {line}
                     </span>
@@ -20,8 +24,20 @@ const CodeDisplayMCQ = ({ code }) => {
     };
 
     return (
-        <div className="codeDisplayMCQ" onContextMenu={(e) => e.preventDefault()}>
-            <pre style={{ margin: 0 }}>
+        <div 
+            className="codeDisplayMCQ" 
+            onContextMenu={(e) => e.preventDefault()}
+            style={{ 
+                overflowX: 'auto',
+                maxWidth: '100%'
+            }}
+        >
+            <pre style={{ 
+                margin: 0,
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word'
+            }}>
                 <code>
                     {renderCodeWithComments(code)}
                 </code>
