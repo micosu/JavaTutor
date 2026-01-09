@@ -79,7 +79,6 @@
     color: #B3D2D8;
     max-width: 90%;
     overflow-wrap: break-word;
-    white-space: normal;
     white-space: pre-wrap;
     font-size: 18px;
 }
@@ -409,6 +408,7 @@
 
 .leftPart {
     flex: 1;
+    padding-left: 10px;
     /* ✅ Left side takes more space */
     /* margin-right: 5px; */
 }
@@ -425,37 +425,59 @@
 .codeDisplayMCQ {
     background-color: #101827;
     padding: 5px 30px;
-    width: 50vw;
-    margin-top: 20px;
+    width: 48vw;
+    margin-top: 15px;
     user-select: none;
+    max-height: 35vh;
+    overflow-y: scroll !important;
+}
 
+.codeDisplayMCQ::-webkit-scrollbar {
+    width: 12px;
+    display: block !important;
+}
+
+.codeDisplayMCQ::-webkit-scrollbar-track {
+    background: #1C2432;
+}
+
+.codeDisplayMCQ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 6px;
+}
+
+.codeDisplayMCQ::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
 .problemMCQ {
-    width: 52vw;
+    width: 50vw;
+    /* padding-left: 10px; */
 }
 
 .problemDescriptionMCQ {
     padding-left: 30px;
     padding-top: 10px;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
     background-color: #101827;
-    width: 52vw;
-    /* overflow-y: auto; */
-    height: 20px;
+    width: 50vw;
     scrollbar-width: none;
     /* Firefox */
     -ms-overflow-style: none;
-    /* overflow-x: hidden; */
-    margin-bottom: 0px
+    margin-bottom: 0px;
+}
+
+.problemDescriptionMCQ .statement {
+    margin: 0; /* Remove default pre margins */
+    padding: 0; /* Remove any padding */
 }
 
 .mcqOptions {
     padding: 30px;
     background-color: #101827;
-    width: 50vw;
+    width: 48vw;
     overflow-y: auto;
-    height: 345px;
+    height: 340;
     scrollbar-width: none;
     /* Firefox */
     -ms-overflow-style: none;
