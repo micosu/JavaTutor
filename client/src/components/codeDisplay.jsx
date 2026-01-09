@@ -2,6 +2,9 @@
 
 // Importing the required dependencies
 import React, { useState, useRef, useEffect } from "react";
+import Prism from 'prismjs';
+import 'prismjs/components/prism-java';
+import 'prismjs/themes/prism-tomorrow.css'; // Dark theme
 
 // Props - codeString (the code to be displayed), onCodeChange (callback function to update the full code), correctAnswers (the correct answers for each blank) onInputChange(callback function to update the user inputs)
 // Helper function for getting index of user input
@@ -32,7 +35,6 @@ const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange 
 
     const validateRef = useRef(() => { });
     const inputPositions = getInputPositions(codeString);
-    // Update inputs as user types
 
     // Handling input change
     const handleChange = (index, value) => {
@@ -94,25 +96,32 @@ const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange 
             .join("\n");
     };
 
-    // Parse code into lines with placeholders and inputs
-    const codeWithInputs = codeString.split("\n").map((line, lineIndex) => {
-        const isComment = line.trimStart().startsWith("//");
+    // Custom renderer to inject input fields into syntax-highlighted code
+    // Custom renderer to inject input fields into syntax-highlighted code
+    const renderLineWithInputs = (line, lineIndex) => {
         const parts = line.split("___");
         
         return (
             <div className="courier-prime-regular codeLines" key={lineIndex}
-                 style={{ whiteSpace: "pre-wrap", userSelect: "none" }}
-                 onContextMenu={(e) => e.preventDefault()}>
+                style={{ whiteSpace: "pre-wrap", userSelect: "none" }}
+                onContextMenu={(e) => e.preventDefault()}>
                 {parts.map((part, partIndex) => {
                     const position = inputPositions.find(p => 
                         p.lineIndex === lineIndex && p.partIndex === partIndex
                     );
                     
+                    // Highlight the code part with Prism
+                    const highlightedCode = Prism.highlight(part, Prism.languages.java, 'java');
+                    
                     return (
                         <React.Fragment key={partIndex}>
-                            <span style={{ fontSize: "18px", color: isComment ? "green" : "white" }}>
-                                {part}
-                            </span>
+                            <span 
+                                style={{ 
+                                    fontSize: '18px',
+                                    whiteSpace: 'pre-wrap'
+                                }}
+                                dangerouslySetInnerHTML={{ __html: highlightedCode }}
+                            />
                             {position && (
                                 <input
                                     type="text"
@@ -122,12 +131,13 @@ const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange 
                                         display: "inline-block",
                                         width: `${Math.max((inputs[position.blankIndex] || "").length * 8 + 20, 50)}px`,
                                         minWidth: "50px",
-                                        maxWidth: "200px", // Optional: prevent it from getting too wide
+                                        maxWidth: "200px",
                                         margin: "0 5px",
                                         padding: "2px",
                                         fontSize: "14px",
                                         border: inputStyles[position.key] || "1px solid #ccc",
                                         borderRadius: "4px",
+                                        backgroundColor: "white",
                                     }}
                                 />
                             )}
@@ -136,7 +146,12 @@ const CodeDisplay = ({ codeString, onCodeChange, correctAnswers, onInputsChange 
                 })}
             </div>
         );
-    });
+    };
+
+    // Parse code into lines with syntax highlighting and inputs
+    const codeWithInputs = codeString.split("\n").map((line, lineIndex) => 
+        renderLineWithInputs(line, lineIndex)
+    );
 
     return (
         <div

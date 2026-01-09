@@ -1,31 +1,31 @@
 import React from "react";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 // Props are code to be displayed
 const CodeDisplayMCQ = ({ code }) => {
-    // Function to render each line with comment highlighting
-    const renderCodeWithComments = (codeString) => {
-        if (!codeString) return null;
-        
-        return codeString.split("\n").map((line, index) => {
-            const isComment = line.trimStart().startsWith("//");
-            
-            return (
-                <div key={index} style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
-                    <span style={{ color: isComment ? '#4CAF50' : 'inherit' }}>
-                        {line}
-                    </span>
-                </div>
-            );
-        });
-    };
-
     return (
         <div className="codeDisplayMCQ" onContextMenu={(e) => e.preventDefault()}>
-            <pre style={{ margin: 0 }}>
-                <code>
-                    {renderCodeWithComments(code)}
-                </code>
-            </pre>
+            <SyntaxHighlighter 
+                language="java" 
+                style={vscDarkPlus}
+                customStyle={{
+                    margin: 0,
+                    padding: '10px',
+                    backgroundColor: '#101827',
+                    fontSize: '14px'
+                }}
+                codeTagProps={{
+                    style: {
+                        color: '#d4d4d4',
+                        fontFamily: 'Menlo, Monaco, Consolas, "Courier New", monospace'
+                    }
+                }}
+                wrapLongLines={true}
+                useInlineStyles={true}
+            >
+                {code}
+            </SyntaxHighlighter>
         </div>
     );
 };
