@@ -1,6 +1,6 @@
 // Pre and Post Test Page
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { tests } from "../constantTests";
 import "../assets/css/test.css";
@@ -14,7 +14,31 @@ const TestPage = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const counter_balanced = COUNTERBALANCED_STUDENTS.split(",");
     const rollNumber = sessionStorage.getItem("rollNumber");
-    const isCounterBalanced = counter_balanced.includes(rollNumber);
+
+    const checkCB = async (studentId) => {
+        if (!studentId) return;
+
+        try {
+            // Check if consent was filled
+            const response = await fetch(`${BASE_URL}/api/counter-balanced/${studentId}`);
+            if (!response.ok) throw new Error("Failed to fetch consent status");
+
+            const data = await response.json();
+            return data === "True";
+        } catch (error) {
+            console.error("Error checking CB status:", error);
+        }
+    };
+
+    const [isCounterBalanced, setIsCounterBalanced] = useState(false);
+    useEffect(() => {
+        const checkStatus = async () => {
+            const cbResult = await checkCB(studentId);
+            setIsCounterBalanced(counter_balanced.includes(rollNumber) || cbResult);
+        };
+        checkStatus();
+    }, [studentId, rollNumber]);
+
     console.log("CB? ", isCounterBalanced);
     const moduleNames = {
         "1": "Control Structures",

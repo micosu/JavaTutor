@@ -14,8 +14,8 @@ import TestButton from "../components/testButton";
 import book from "../assets/images/book.svg"
 
 const BASE_URL = process.env.REACT_APP_BACKEND_URL;
-const CIT_STUDENTS = process.env.REACT_APP_CIT_STUDENTS || "";
-const BLOCKED_MODULES = process.env.REACT_APP_BLOCKED_MODULES || "";
+// const CIT_STUDENTS = process.env.REACT_APP_CIT_STUDENTS || "";
+// const BLOCKED_MODULES = process.env.REACT_APP_BLOCKED_MODULES || "";
 
 const modulesData = [
     {
@@ -77,8 +77,8 @@ const Dashboard = () => {
     const [showMessageTest, setShowMessageTest] = useState(false);
     const rollNumber = sessionStorage.getItem("rollNumber");
     const studentType = sessionStorage.getItem("studentGroup");
-    const current_students = CIT_STUDENTS.split(",");
-    const blocked_modules = BLOCKED_MODULES.split(",");
+    // const current_students = CIT_STUDENTS.split(",");
+    // const blocked_modules = BLOCKED_MODULES.split(",");
 
     const timer = setTimeout(() => {
         setSuccessMessage((prev) => (prev ? "hidden" : ""));
