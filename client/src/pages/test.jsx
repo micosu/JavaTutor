@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { tests } from "../constantTests";
 import "../assets/css/test.css";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 const COUNTERBALANCED_STUDENTS = process.env.REACT_APP_COUNTERBALANCED || "";
@@ -190,7 +192,23 @@ const TestPage = () => {
             {test.questions.map((q) => (
                 <div key={q.id} className="question-card">
                     <p className="question-text">{q.question}</p>
-                    {q.code && <pre className="code-block">{q.code}</pre>}
+                    {q.code && (
+                        <SyntaxHighlighter 
+                            language="java" 
+                            style={vscDarkPlus}
+                            customStyle={{
+                                margin: 0,
+                                padding: '10px',
+                                backgroundColor: '#1e1e1e',
+                                fontSize: '14px',
+                                borderRadius: '5px'
+                            }}
+                            wrapLongLines={true}
+                            useInlineStyles={true}
+                        >
+                            {q.code}
+                        </SyntaxHighlighter>
+                    )}
 
                     <div className="options-container">
                         {q.options.map((option, index) => (
