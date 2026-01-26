@@ -31,9 +31,9 @@ gc = gspread.authorize(creds)
 spreadsheet = gc.open(SHEET_NAME)
 
 try:
-    sheet = spreadsheet.worksheet("Summary")
+    sheet = spreadsheet.worksheet("QuestionsCompleted")
 except gspread.exceptions.WorksheetNotFound:
-    sheet = spreadsheet.add_worksheet(title="Summary", rows="1000", cols="30")
+    sheet = spreadsheet.add_worksheet(title="QuestionsCompleted", rows="1000", cols="30")
 
 # === Get students from MongoDB ===
 students = collection.find({"rollNumber": {"$in": ROLL_NUMBERS}})

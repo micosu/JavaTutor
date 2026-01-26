@@ -26,8 +26,11 @@ try:
     # Prefer ID if you have it (more reliable than title):
     # sh = client.open_by_key(SHEET_ID)
     sh = client.open(SHEET_NAME)
-    sheet = sh.sheet1
-    print("Opened shared sheet.")
+    try:
+        sheet = sh.worksheet("Summary")
+    except gspread.exceptions.WorksheetNotFound:
+        sheet = sh.add_worksheet(title="Summary", rows="1000", cols="30")
+        print("Opened shared sheet.")
 except SpreadsheetNotFound:
     raise SystemExit(
         "Sheet not found or not shared with the service account. "
